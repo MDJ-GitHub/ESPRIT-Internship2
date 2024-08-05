@@ -1,0 +1,145 @@
+# Esprit Internship 2 Kubernetesfile
+
+# Database Deployment
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: esprit-internship2-dep-db
+  labels:
+    app: label-esprit-internship2-dep-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: label-esprit-internship2-dep-db
+  template:
+    metadata:
+      labels:
+        app: label-esprit-internship2-dep-db
+    spec:
+      containers:
+      - name: esprit-internship2-db
+        image: mysql:latest
+        ports:
+        - containerPort: 3306
+          name: cport-3306
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: root
+      restartPolicy: Always
+
+---
+
+# Database Service ClusterIP
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: esprit-internship2-cser-db
+  labels:
+    app: label-esprit-internship2-cser-db
+spec:
+  selector:
+    app: label-esprit-internship2-cdep-db
+  ports:
+  - port: 3306
+    name: port-3306
+    targetPort: 3306
+
+---
+
+# Backend Deployment
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: esprit-internship2-dep-back
+  labels:
+    app: label-esprit-internship2-dep-back
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: label-esprit-internship2-dep-back
+  template:
+    metadata:
+      labels:
+        app: label-esprit-internship2-dep-back
+    spec:
+      containers:
+      - name: esprit-internship2-back
+        image: mdjdocker/esprit-internship2-back:latest
+        ports:
+        - containerPort: 9000
+          name: cport-9000
+      restartPolicy: Always
+  
+---
+
+# Backend Service NodePort
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: esprit-internship2-nser-back
+  labels:
+    app: label-esprit-internship2-nser-back
+spec:
+  selector:
+    app: label-esprit-internship2-dep-back
+  ports:
+  - port: 9000
+    name: port-9000
+    targetPort: 9000
+    nodePort: 30001
+  type: NodePort
+  
+---
+
+# Frontend Deployment
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: esprit-internship2-dep-front
+  labels:
+    app: label-esprit-internship2-dep-front
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: label-esprit-internship2-dep-front
+  template:
+    metadata:
+      labels:
+        app: label-esprit-internship2-dep-front
+    spec:
+      containers:
+      - name: esprit-internship2-front
+        image: mdjdocker/esprit-internship2-front:latest
+        ports:
+        - containerPort: 80
+          name: cport-80
+      restartPolicy: Always
+    
+---
+
+# Frontend Service NodePort
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: esprit-internship2-nser-front
+  labels:
+    app: label-esprit-internship2-nser-front
+spec:
+  selector:
+    app: label-esprit-internship2-dep-front
+  ports:
+  - port: 80 
+    name: port-80
+    targetPort: 80
+    nodePort: 30002
+  type: NodePort
+  
