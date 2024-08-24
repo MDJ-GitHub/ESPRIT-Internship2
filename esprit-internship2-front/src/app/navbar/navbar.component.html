@@ -1,0 +1,20 @@
+<nav class="navbar navbar-dark bg-primary shadow-lg"
+    style="position: fixed; width: 100%; z-index: 1000; height: 45px; padding: 0.25rem 0.5rem; display: flex; justify-content: space-between; align-items: center;">
+    <a class="navbar-brand" href="#" style="font-size: 1rem; display: flex; align-items: center;">
+        <img src="../assets/images/logo3.png" width="50" height="25" alt="Logo of the SNCFT company"
+            class="d-inline-block align-top">
+        &nbsp;Gestion des Fraits
+    </a>
+    <div style="display: flex; align-items: center;">
+        <button *ngIf="addFreightButton" class="btn btn-light btn-sm">Ajouter un Fret</button>
+        <button *ngIf="aideButton" class="btn btn-light btn-sm">Aide</button>
+        <button class="btn btn-sm btn-outline-light"
+            style="padding: 2px; font-size: 10px; line-height: 1; display: flex; align-items: center; margin-left: 10px;">
+            <div style="margin: 0; padding: 0; display: flex; flex-direction: column; align-items: flex-start;">
+                <div>{{ currentDate }}</div>
+                <div>{{ currentTime }}</div>
+            </div>
+            <i class="bi bi-list" style="margin-left: 5px;"></i>
+        </button>
+    </div>
+</nav>

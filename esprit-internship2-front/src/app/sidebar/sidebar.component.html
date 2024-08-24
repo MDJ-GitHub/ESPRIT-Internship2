@@ -1,0 +1,43 @@
+<div class="d-flex flex-column bg-dark text-light shadow-lg" style="width: 50px; height: 100vh; position: relative;">
+    
+    <br>
+    <br>
+    <br>
+   
+    <div [ngClass]="{'btn btn-sm nav-item text-center': true, 'btn-primary': freightPage, 'btn-dark': !freightPage}">
+        <i class="bi bi-stoplights-fill fs-3" data-bs-toggle="tooltip" data-bs-placement="right" title="Frêts"></i>
+      </div>      
+    <!-- Person Icon -->
+    <div [ngClass]="{'btn btn-sm nav-item text-center': true, 'btn-primary': personnelPage, 'btn-dark': !personnelPage}">
+      <i class="bi bi-person fs-3" data-bs-toggle="tooltip" data-bs-placement="right" title="Personnel"></i>
+    </div>
+    <!-- Resource Icon -->
+    <div [ngClass]="{'btn btn-sm nav-item text-center': true, 'btn-primary': resourcePage, 'btn-dark': !resourcePage}">
+      <i class="bi-box-seam fs-3" data-bs-toggle="tooltip" data-bs-placement="right" title="Ressources"></i>
+    </div>
+    <!-- Container Icon -->
+    <div [ngClass]="{'btn btn-sm nav-item text-center': true, 'btn-primary': containerPage, 'btn-dark': !containerPage}">
+      <i class="bi bi-box2 fs-3" data-bs-toggle="tooltip" data-bs-placement="right" title="Conteneurs"></i>
+    </div>
+    <!-- Train Icon -->
+    <div [ngClass]="{'btn btn-sm nav-item text-center': true, 'btn-primary': trainPage, 'btn-dark': !trainPage}">
+      <i class="bi bi-train-lightrail-front fs-3" data-bs-toggle="tooltip" data-bs-placement="right" title="Trains"></i>
+    </div>
+    <!-- Cart Icon -->
+    <div [ngClass]="{'btn btn-sm nav-item text-center': true, 'btn-primary': carPage, 'btn-dark': !carPage}">
+      <i class="bi bi-minecart fs-3" data-bs-toggle="tooltip" data-bs-placement="right" title="Wagons"></i>
+    </div>
+  
+    <hr>
+    <br>
+  
+   
+    <!-- Spacer -->
+    <div class="flex-grow-1"></div>
+
+    <!-- Avatar Icon at the Bottom -->
+    <div class="nav-item text-center bg-light">
+      <i class="bi bi-person-circle fs-1" style="color: black;" data-bs-toggle="tooltip" data-bs-placement="right" title="Profile"></i>
+    </div>
+  </div>
+  

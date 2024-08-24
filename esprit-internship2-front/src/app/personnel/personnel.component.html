@@ -1,0 +1,84 @@
+<app-navbar [addFreightButton]="true"></app-navbar>
+<div style="display: flex; height: 100vh;">
+
+    <!-- Sidebar -->
+    <app-sidebar [personnelPage]="true"></app-sidebar>
+
+    <!-- Main Content -->
+    <div style="flex: 1; position: relative; display: flex;">
+
+        <div style="flex: 1; display: flex; justify-content: center; align-items: center; text-align: center; position: relative;">
+            <div style="
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-image: url('assets/images/background2.jpg');
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+                opacity: 0.2;
+            "></div>
+
+            <div style="flex: 1; display: flex;">
+                <!-- Table Section -->
+                <div style="flex: 3; position: relative; padding: 15px; padding-right: 0px; z-index: 1;">
+                    <div style="height: 480px; overflow-y: auto; overflow-x: hidden; margin-top: 20px;">
+                        <table class="table table-bordered table-striped table-hover shadow" style="width: 100%;">
+                            <thead class="thead-dark" style="position: sticky; top: 0">
+                                <tr>
+                                    <th>Photo</th>
+                                    <th>Nom</th>
+                                    <th>Prenom</th>
+                                    <th>Rôle</th>
+                                    <th>Nombre des Ressources</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><img src="https://via.placeholder.com/50" alt="Profile Picture" class="img-fluid rounded-circle"></td>
+                                    <td>Doe</td>
+                                    <td>John</td>
+                                    <td>Manager</td>
+                                    <td>5</td>
+                                </tr>
+                                <!-- More rows here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Filter Card Section -->
+                <div style="flex: 1; padding: 20px; z-index: 1; padding-top: 36px;"> <!-- Adjusted padding above the card -->
+                    <div class="card shadow rounded" style="padding: 16px;">
+                        <div class="form-group">
+                            <label for="filterName">Prénom / Nom</label>
+                            <input type="text" class="form-control" id="filterName" placeholder="Nom">
+                        </div>
+                        <div class="form-group">
+                            <label for="filterRole">Rôle</label>
+                            <select class="form-control" id="filterRole">
+                                <option value="" disabled selected>Select a role</option>
+                                <option>Manager</option>
+                                <option>Developer</option>
+                                <option>Designer</option>
+                                <option>Analyst</option>
+                                <option>Tester</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="filterResources">Nbr Ressources</label>
+                            <input type="number" class="form-control" id="filterResources" placeholder="Nombre des Ressources">
+                        </div>
+                        <br>
+                        <button type="button" class="btn btn-primary">Filtrer</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
