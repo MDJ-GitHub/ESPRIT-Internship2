@@ -3,6 +3,7 @@ import { Station } from './Station';
 
 export interface Car {
     id?: number;
+    title?: string;
     creationDate?: string;
     photo?: string;
     weight?: number;
@@ -11,7 +12,10 @@ export interface Car {
     lengthLimit?: number;
     heightLimit?: number;
     cost?: number;
-    train?: Train; 
+
     station?: Station;
+
+    train?: Train; 
+    
     state?: number;
   }

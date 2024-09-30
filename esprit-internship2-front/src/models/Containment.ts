@@ -4,8 +4,10 @@ import { Freight } from './Freight';
 
 export interface Containment {
   id?: number;
-  resources?: Resource[];
+
+  resource?: Resource;
   containers?: Container[];
   freight?: Freight;
+  
   state?: number;
 }

@@ -1,14 +1,153 @@
-<app-navbar [addFreightButton]="true"></app-navbar>
+<app-navbar [addPersonnelButton]="true"></app-navbar>
 <div style="display: flex; height: 100vh;">
 
-    <!-- Sidebar -->
-    <app-sidebar [personnelPage]="true"></app-sidebar>
+  <!-- Sidebar -->
+  <app-sidebar [personnelPage]="true"></app-sidebar>
 
-    <!-- Main Content -->
-    <div style="flex: 1; position: relative; display: flex;">
+  <!-- Main Content -->
+  <form (ngSubmit)="addPersonnel()" #personnelForm="ngForm">
+    <div class="popup-overlay" *ngIf="addPersonnelVisible$ | async">
+      <div class="popup-content">
+        <!-- First Row: First Name, Last Name, and Password -->
+        <div class="row">
+          <div class="col-md-6">
+            <label for="firstName">Prénom</label>
+            <input type="text" id="firstName" class="form-control" placeholder="Entrez le prénom" required
+              [(ngModel)]="personnel.firstName" name="firstName" #firstName="ngModel" />
+            <!-- Validation message for first name -->
+            <div *ngIf="firstName.invalid && firstName.touched" class="text-danger">
+              Le prénom est obligatoire
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label for="lastName">Nom</label>
+            <input type="text" id="lastName" class="form-control" placeholder="Entrez le nom" required
+              [(ngModel)]="personnel.lastName" name="lastName" #lastName="ngModel" />
+            <!-- Validation message for last name -->
+            <div *ngIf="lastName.invalid && lastName.touched" class="text-danger">
+              Le nom est obligatoire
+            </div>
+          </div>
+         
+        </div>
 
-        <div style="flex: 1; display: flex; justify-content: center; align-items: center; text-align: center; position: relative;">
-            <div style="
+        <!-- Second Row: Phone and Email -->
+        <div class="row mt-2">
+          <div class="col-md-6">
+            <label for="phone">Téléphone</label>
+            <input type="text" id="phone" class="form-control" placeholder="Entrez le numéro de téléphone" required
+              pattern="[0-9]*" [(ngModel)]="personnel.phone" name="phone" #phone="ngModel" />
+            <!-- Validation message for phone -->
+            <div *ngIf="phone.invalid && phone.touched" class="text-danger">
+              Entrez un numéro de téléphone valide
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label for="email">Email</label>
+            <input type="email" id="email" class="form-control" placeholder="Entrez l'email" required
+              [(ngModel)]="personnel.email" name="email" #email="ngModel" />
+            <!-- Validation message for email -->
+            <div *ngIf="email.invalid && email.touched" class="text-danger">
+              Entrez une adresse email valide
+            </div>
+          </div>
+        </div>
+
+        <!-- Third Row: Birthday, Role, Salary, and Image Upload -->
+        <div class="row mt-2">
+          <div class="col-md-6">
+            <div class="row">
+              <div class="col-md-12">
+                <label for="birthday">Date de Naissance</label>
+                <input type="date" id="birthday" class="form-control" required [(ngModel)]="personnel.birthday"
+                  name="birthday" #birthday="ngModel" />
+                <!-- Validation message for birthday -->
+                <div *ngIf="birthday.invalid && birthday.touched" class="text-danger">
+                  La date de naissance est obligatoire
+                </div>
+              </div>
+            </div>
+            <div class="row mt-2">
+              <div class="col-md-12">
+                <label for="role">Rôle</label>
+                <select id="role" class="form-select" required [(ngModel)]="personnel.role" name="role" #role="ngModel">
+                  <option value="" disabled>Choisissez un rôle</option>
+                  <option value="Client">Client</option>
+                  <option value="Admin">Administrateur</option>
+                  <option value="Driver">Chauffeur</option>
+                  <option value="Worker">Ouvrier</option>
+                  <option value="Mechanic">Mécanicien</option>
+                  <option value="Technician">Technicien</option>
+                  <option value="Monitor">Moniteur</option>
+                </select>                
+                <!-- Validation message for role -->
+                <div *ngIf="role.invalid && role.touched" class="text-danger">
+                  Le rôle est obligatoire
+                </div>
+              </div>
+              <div class="col-md-12">
+                <label for="salary" class="mt-2">Salaire</label>
+                <input type="number" id="salary" class="form-control" placeholder="Entrez le salaire" required
+                  [(ngModel)]="personnel.salary" name="salary" #salary="ngModel" />
+                <!-- Validation message for salary -->
+                <div *ngIf="salary.invalid && salary.touched" class="text-danger">
+                  Le salaire est obligatoire
+                </div>
+              </div>
+              <div class="col-md-12">
+                <label for="password">Mot de Passe</label>
+                <input type="password" id="password" class="form-control" placeholder="Minimum 8 caractères" required
+                  minlength="8" [(ngModel)]="personnel.password" name="password" #password="ngModel" />
+                <!-- Validation message for password -->
+                <div *ngIf="password.invalid && password.touched" class="text-danger">
+                  Le mot de passe doit comporter au moins 8 caractères
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Image Upload and Placeholder Image -->
+          <div class="col-md-6">
+            <label for="imageInput">Télécharger Image</label>
+            <input type="file" id="imageInput" class="form-control" (change)="onImageSelected($event)" />
+            <div *ngIf="selectedImageUrl; else placeholder">
+              <div class="card mt-3">
+                <img [src]="selectedImageUrl" alt="Selected Image" class="img-fluid" />
+              </div>
+            </div>
+            <ng-template #placeholder>
+              <div class="card mt-3">
+                <br><br><br><br><br><br><br><br>
+              </div>
+            </ng-template>
+          </div>
+        </div>
+
+        <!-- Separator -->
+        <hr class="mt-4" />
+
+        <!-- Row for Title and Buttons -->
+        <div class="row align-items-center">
+          <div class="col-md-6">
+            <h5 *ngIf="modify">Modifier un Personnel</h5>
+            <h5 *ngIf="!modify">Ajouter un Personnel</h5>
+  
+          </div>
+          <div class="col-md-6 text-end">
+            <button type="button" class="btn btn-secondary me-2" (click)="addPersonnel()">Annuler</button>
+            <button type="submit" class="btn btn-primary" [disabled]="personnelForm.invalid">Appliquer</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+
+
+  <div style="flex: 1; position: relative; display: flex;">
+
+    <div
+      style="flex: 1; display: flex; justify-content: center; align-items: center; text-align: center; position: relative;">
+      <div style="
                 position: absolute;
                 top: 0;
                 left: 0;
@@ -21,64 +160,92 @@
                 opacity: 0.2;
             "></div>
 
-            <div style="flex: 1; display: flex;">
-                <!-- Table Section -->
-                <div style="flex: 3; position: relative; padding: 15px; padding-right: 0px; z-index: 1;">
-                    <div style="height: 480px; overflow-y: auto; overflow-x: hidden; margin-top: 20px;">
-                        <table class="table table-bordered table-striped table-hover shadow" style="width: 100%;">
-                            <thead class="thead-dark" style="position: sticky; top: 0">
-                                <tr>
-                                    <th>Photo</th>
-                                    <th>Nom</th>
-                                    <th>Prenom</th>
-                                    <th>Rôle</th>
-                                    <th>Nombre des Ressources</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><img src="https://via.placeholder.com/50" alt="Profile Picture" class="img-fluid rounded-circle"></td>
-                                    <td>Doe</td>
-                                    <td>John</td>
-                                    <td>Manager</td>
-                                    <td>5</td>
-                                </tr>
-                                <!-- More rows here -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+      <div style="flex: 1; display: flex;">
+        <!-- Table Section -->
+        <div style="flex: 5; position: relative; padding: 12px; padding-right: 0px; z-index: 1;">
+          <div style="height: 480px; overflow-y: auto; overflow-x: hidden; margin-top: 20px;">
+            <table class="table table-bordered table-striped table-hover shadow" style="width: 100%;">
+              <thead class="thead-dark" style="position: sticky; top: 0">
+                <tr>
+                  <th>Photo</th>
+                  <th>Nom</th>
+                  <th>Prenom</th>
+                  <th>Rôle</th>
+                  <th>Tel.</th>
+                  <th>Email</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let personnel of personnels" (click)="togglePopup($event, personnel.id)">
+                  <td>
+                  <div>
+                    <img [src]="personnel.photo || 'https://via.placeholder.com/50'" alt="Image"
+                        [ngStyle]="{
+              'transform': activeZoomIndex === personnel.id ? 'scale(4) translateX(20px)' : 'scale(1)', 
+              'transition': 'transform 0.2s ease-in-out'
+            }" style="width: 50px; object-fit: cover;"
+                        (mousedown)="activeZoomIndex = personnel.id"
+                        (mouseup)="activeZoomIndex = -1" (mouseleave)="activeZoomIndex = -1">
+                </div></td>  <td>{{ personnel.lastName }}</td>
+                  <td>{{ personnel.firstName }}</td>
+                  <td>{{ personnel.personnelRole }}</td>
+                  <td>{{ personnel.phone }}</td>
+                  <td>{{ personnel.email }}</td>
 
-                <!-- Filter Card Section -->
-                <div style="flex: 1; padding: 20px; z-index: 1; padding-top: 36px;"> <!-- Adjusted padding above the card -->
-                    <div class="card shadow rounded" style="padding: 16px;">
-                        <div class="form-group">
-                            <label for="filterName">Prénom / Nom</label>
-                            <input type="text" class="form-control" id="filterName" placeholder="Nom">
+                  <div *ngIf="popupFreightId === personnel.id" [ngStyle]="{
+                    'position': 'absolute', 
+                    'background': 'white', 
+                    'border': '1px solid #ccc', 
+                    'box-shadow': '0px 4px 8px rgba(0, 0, 0, 0.1)', 
+                    'padding': '10px', 
+                    'border-radius': '5px', 
+                    'z-index': '1000',
+                    'top': popupPosition.top + 'px',
+                    'left': popupPosition.left + 'px'
+                  }" (click)="$event.stopPropagation()">
+                            <ul style="list-style-type: none; padding: 0; margin: 0;">
+                                <li style="margin-bottom: 5px; cursor: pointer;" (click)="modifyF(personnel)">
+                                    📝 Modifier</li>
+                                <li style="margin-bottom: 5px; cursor: pointer;" (click)="deleteF(personnel)">
+                                    🗑️ Supprimer</li>
+                                <li style="cursor: pointer;"
+                                    (click)="$event.stopPropagation(); cancelPopup()">❌ Annuler</li>
+                            </ul>
                         </div>
-                        <div class="form-group">
-                            <label for="filterRole">Rôle</label>
-                            <select class="form-control" id="filterRole">
-                                <option value="" disabled selected>Select a role</option>
-                                <option>Manager</option>
-                                <option>Developer</option>
-                                <option>Designer</option>
-                                <option>Analyst</option>
-                                <option>Tester</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="filterResources">Nbr Ressources</label>
-                            <input type="number" class="form-control" id="filterResources" placeholder="Nombre des Ressources">
-                        </div>
-                        <br>
-                        <button type="button" class="btn btn-primary">Filtrer</button>
-                    </div>
-                </div>
-            </div>
 
+                </tr>
+              </tbody>
+            </table>
+            
+          </div>
         </div>
 
+        <!-- Filter Card Section -->
+        <div style="flex: 1; padding: 10px; z-index: 1; padding-top: 31px;"> <!-- Adjusted padding above the card -->
+          <div class="card shadow rounded" style="width: 140px; padding: 16px;">
+            <div class="form-group">
+              <label for="filterName">Prénom/Nom</label>
+              <input type="text" class="form-control" id="filterName" placeholder="Nom" [(ngModel)]="filter.name">
+            </div>
+            <div class="form-group">
+              <label for="filterTel">Tel</label>
+              <input type="phone" class="form-control" id="filterTel" placeholder="Tel" [(ngModel)]="filter.tel">
+            </div>
+            <div class="form-group">
+              <label for="filterRole">Rôle</label>
+              <select class="form-control" id="filterRole" [(ngModel)]="filter.role">
+                <option value=""  selected>Tout</option>
+                <option>Client</option>
+              </select>
+            </div>
+            <br>
+            <button type="button" class="btn btn-primary" (click)="applyFilter()">Filtrer</button>
+          </div>
+        </div>
+      </div>
+
     </div>
+
+  </div>
 
 </div>

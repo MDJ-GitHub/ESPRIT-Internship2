@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -17,7 +19,7 @@ public class Container {
     @Id
     @GeneratedValue
     private Long id;
-    private LocalDateTime creationDate;
+    private String title;
     @Lob
     @Column(columnDefinition = "LONGTEXT")
     private String photo = "";
@@ -27,12 +29,11 @@ public class Container {
     private Float length;
     private Float height;
     private Float cost;
-    private ContainerType containerType;
 
-    @ManyToOne
-    private Containment containment = new Containment();
-    @ManyToOne
-    private Station station = new Station();
+    @Enumerated(EnumType.STRING)
+    private ContainerType containerType;
+    @Enumerated(EnumType.STRING)
+    private Station station;
 
     private int state = 0;
 

@@ -11,10 +11,13 @@ export interface Freight {
   description?: string;
   priority?: number;
   cost?: number;
-  launchStation?: Station; 
-  arrivvalStation?: Station; 
+
+  stationStart?: Station; 
+  stationArrive?: Station; 
+
   train?: Train; 
   containments?: Containment[]; 
   personnels?: Personnel[]; 
+  
   state?: number;
 }

@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -21,24 +22,33 @@ public class Resource {
     @Id
     @GeneratedValue
     private Long id;
-    private LocalDateTime creationDate;
+    private String title;
+    private Date addedDate;
     @Lob
     @Column(columnDefinition = "LONGTEXT")
     private String photo = "";
     private Float weight;
+    private Float width;
+    private Float length;
+    private Float height;
     private Float cost;
     private Long count;
-    @Enumerated(EnumType.STRING)
-    private RessourceType ressourceType;
 
+    @Enumerated(EnumType.STRING)
+    private ResourceType resourceType;
+    @Enumerated(EnumType.STRING)
+    private Station stationStart;
+    @Enumerated(EnumType.STRING)
+    private Station stationArrive;
+
+    @OneToOne
+    private Containment containment;
     @ManyToOne
-    private Containment containment = new Containment();
-    @ManyToOne
-    private Personnel owner = new Personnel();
+    private Personnel owner;
 
     private int state = 0;
 
-    public enum RessourceType {
+    public enum ResourceType {
         Nutrition,
         Construction,
         Mineral,

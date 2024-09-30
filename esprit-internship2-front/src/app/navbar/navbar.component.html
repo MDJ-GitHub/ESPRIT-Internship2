@@ -6,7 +6,12 @@
         &nbsp;Gestion des Fraits
     </a>
     <div style="display: flex; align-items: center;">
-        <button *ngIf="addFreightButton" class="btn btn-light btn-sm">Ajouter un Fret</button>
+        <button *ngIf="addFreightButton"(click)="addFreightPopup()" class="btn btn-light btn-sm">Ajouter un Fret</button>
+        <button *ngIf="addCarButton" (click)="addCarPopup()" class="btn btn-light btn-sm">Ajouter un Wagon</button>
+        <button *ngIf="addContainerButton" (click)="addContainerPopup()" class="btn btn-light btn-sm">Ajouter un Conteneur</button>
+        <button *ngIf="addPersonnelButton" (click)="addPersonnelPopup()" class="btn btn-light btn-sm">Ajouter un Personnel</button>
+        <button *ngIf="addTrainButton" (click)="addTrainPopup()" class="btn btn-light btn-sm">Ajouter un Train</button>
+        <button *ngIf="addResourceButton" (click)="addResourcePopup()" class="btn btn-light btn-sm">Ajouter une Resource</button>
         <button *ngIf="aideButton" class="btn btn-light btn-sm">Aide</button>
         <button class="btn btn-sm btn-outline-light"
             style="padding: 2px; font-size: 10px; line-height: 1; display: flex; align-items: center; margin-left: 10px;">

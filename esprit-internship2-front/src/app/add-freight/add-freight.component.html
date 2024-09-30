@@ -1,0 +1,332 @@
+<app-navbar [addFreightButton]="true"></app-navbar>
+<div style="display: flex; height: 100vh;">
+
+    <!-- Sidebar -->
+    <app-sidebar [freightPage]="true"></app-sidebar>
+
+    <!-- Main Content -->
+    <div style="flex: 1; position: relative; display: flex;">
+
+        <!-- Scrollable container for form cards -->
+        <div
+            style="flex: 1; display: flex; justify-content: center; align-items: flex-start; text-align: center; overflow-y: auto; padding: 20px; position: relative;">
+
+            <!-- Fixed Background Image -->
+            <div style="
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-image: url('assets/images/background2.jpg');
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+                opacity: 0.2;
+                z-index: -1;
+                background-attachment: fixed;
+            "></div>
+
+            <!-- Cards Container -->
+            <form (ngSubmit)="addFreight()" style="z-index: 1; width: 100%; display: flex; padding-top: 36px; flex-direction: column; gap: 20px;">
+                <!-- Card 1 -->
+                <div class="card shadow-lg" style="opacity: 90%;">
+                    <div class="card-body">
+                        <h5 class="card-title">Etape 1: Selection des Stations</h5>
+                        <div class="mb-3">
+                            <label for="trainAxe" class="mt-2">Axe</label>
+                            <select id="trainAxe" class="form-select" required [(ngModel)]="freight.trainAxe"
+                                name="trainAxe" #trainAxe="ngModel" (change)="onTrainAxeChange($event)">
+                                <option value="" disabled>Choisissez un axe</option>
+                                <option value="Tunis_Sousse_Sfax_Gabes_Gafsa">Tunis-Sousse-Sfax-Gabes-Gafsa</option>
+                                <option value="Tunis_LaGoulette">Tunis-LaGoulette</option>
+                                <option value="Tunis_Gaafour_Djerissa_Kasserine">Tunis-Gaafour-Djerissa-Kasserine
+                                </option>
+                                <option value="Tunis_Beja_Ghardimaou">Tunis-Beja-Ghardimaou</option>
+                                <option value="Tunis_Bizerte">Tunis-Bizerte</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="stationStart" class="mt-2">Départ de la station:</label>
+                                    <select (change)="retrieveResourcesByStation()" id="stationStart"
+                                        class="form-select" required [(ngModel)]="freight.stationStart"
+                                        name="stationStart" #stationStart="ngModel">
+                                        <option value="" disabled>Choisissez un axe d'abord</option>
+                                        <option *ngFor="let station of stationsStart" [value]="station">{{ station }}
+                                        </option>
+                                    </select>
+                                    <div *ngIf="stationStart.invalid && stationStart.touched" class="text-danger">
+                                        La station de départ est obligatoire
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="stationArrive" class="mt-2">Vers la station:</label>
+                                    <select (change)="retrieveResourcesByStation()" id="stationArrive"
+                                        class="form-select" required [(ngModel)]="freight.stationArrive"
+                                        name="stationArrive" #stationArrive="ngModel">
+                                        <option value="" disabled>Choisissez un axe d'abord</option>
+                                        <option *ngFor="let station of stationsArrive" [value]="station">{{ station }}
+                                        </option>
+                                    </select>
+                                    <div *ngIf="stationArrive.invalid && stationArrive.touched" class="text-danger">
+                                        La station d'arrivée est obligatoire
+                                    </div>
+                                    <div *ngIf="stationStart.value && stationArrive.value && stationStart.value === stationArrive.value"
+                                        class="text-danger mt-2">
+                                        La station de départ et d'arrivée ne peuvent pas être identiques.
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+                </div>
+
+                <div class="card shadow-lg" style="opacity: 90%;">
+                    <div class="card-body">
+                        <h5 class="card-title">Etape 2: Selection de Train</h5>
+                        <div class="col-md-12" *ngFor="let train of trains; let i = index"
+                        style="min-height: 50px;">
+                        <div (click)="selectTrain(train)"
+                            [ngClass]="{'bg-primary': isTrainSelected(train)}"
+                            style="border: 1px solid lightgray; border-radius: 8px; padding: 10px; margin-bottom: 5px; display: flex; align-items: center; cursor: pointer;">
+
+                            <div style="display: flex; align-items: center;">
+                                <img [src]="train.photo || 'https://via.placeholder.com/50'"
+                                    alt="Image" [ngStyle]="{
+                                        'transform': activeZoomIndex === train.id ? 'scale(4) translateX(20px)' : 'scale(1)', 
+                                        'transition': 'transform 0.2s ease-in-out'
+                                    }" style="width: 50px; object-fit: cover;"
+                                    (mousedown)="activeZoomIndex = train.id"
+                                    (mouseup)="activeZoomIndex = -1"
+                                    (mouseleave)="activeZoomIndex = -1">
+                                <span>&nbsp; {{ train.title }} &nbsp; </span>
+                                <div class="col-md-6" *ngFor="let car of train.cars; let i = index"
+                                    style="min-height: 50px;">
+                                    <div
+                                        style="border: 1px solid lightgray; border-radius: 8px; padding: 10px; margin-bottom: 5px; display: flex; align-items: center; cursor: pointer;">
+
+                                        <div style="display: flex; align-items: center;">
+                                            <img [src]="car.photo || 'https://via.placeholder.com/50'"
+                                                alt="Image" [ngStyle]="{
+                                        'transform': activeZoomIndex === car.id ? 'scale(4) translateX(20px)' : 'scale(1)', 
+                                        'transition': 'transform 0.2s ease-in-out'
+                                    }" style="width: 50px; object-fit: cover;"
+                                                (mousedown)="activeZoomIndex = train.id"
+                                                (mouseup)="activeZoomIndex = -1"
+                                                (mouseleave)="activeZoomIndex = -1">
+                                            <span>&nbsp; {{ car.title }}
+                                                &nbsp; {{ car.lengthLimit }}x{{ car.widthLimit }}x{{
+                                                car.heightLimit }} m / {{ car.weightLimit }}
+                                                kg</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                    </div>
+
+                    </div>
+                </div>
+
+
+                <!-- Card 3 -->
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Etape 3: Contenerisation</h5>
+                        <div class="mb-3">
+
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6 style="align-items: left;">Choisissez Resource</h6>
+                                    <div class="mb-3">
+
+                                        <div class="col-md-4" *ngFor="let resource of resources; let i = index"
+                                            style="min-height: 50px;">
+                                            <div (click)="selectResource(resource)"
+                                                [ngClass]="{'bg-primary': isResourceSelected(resource)}"
+                                                style="border: 1px solid lightgray; border-radius: 8px; padding: 10px; margin-bottom: 5px; display: flex; align-items: center; cursor: pointer;">
+
+                                                <div style="display: flex; align-items: center;">
+                                                    <img [src]="resource.photo || 'https://via.placeholder.com/50'"
+                                                        alt="Image" [ngStyle]="{
+                                                        'transform': activeZoomIndex === resource.id ? 'scale(4) translateX(20px)' : 'scale(1)', 
+                                                        'transition': 'transform 0.2s ease-in-out'
+                                                    }" style="width: 50px; object-fit: cover;"
+                                                        (mousedown)="activeZoomIndex = resource.id"
+                                                        (mouseup)="activeZoomIndex = -1"
+                                                        (mouseleave)="activeZoomIndex = -1">
+                                                    <span>&nbsp; {{ resource.title }} <br>
+                                                        &nbsp;  {{ resource.owner?.lastName }} {{resource.owner?.firstName }} 
+                                                        &nbsp; {{(resource.length ?? 0) * (resource.count ?? 0)}}x{{(resource.width ?? 0) * (resource.count ?? 0)}}x{{(resource.height ?? 0) * (resource.count ?? 0) }} m 
+                                                        
+                                                        ({{(resource.length ?? 0) * (resource.count ?? 0) * (resource.width ?? 0) * (resource.count ?? 0) * (resource.height ?? 0) * (resource.count ?? 0) }} m3) 
+                                                        <br>
+                                                        &nbsp; {{ (resource.weight ?? 0) * (resource.count ?? 0) }} kg</span>
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                            <br>
+
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6 style="align-items: left;">Choisissez Conteneur</h6>
+                                    <div class="mb-3">
+
+                                        <div class="mb-3">
+
+                                            <div class="col-md-4" *ngFor="let container of containers; let i = index"
+                                                style="min-height: 50px;">
+                                                <div (click)="selectContainer(container)"
+                                                    [ngClass]="{'bg-primary': isContainerSelected(container)}"
+                                                    style="border: 1px solid lightgray; border-radius: 8px; padding: 10px; margin-bottom: 5px; display: flex; align-items: center; cursor: pointer;">
+
+                                                    <div style="display: flex; align-items: center;">
+                                                        <img [src]="container.photo || 'https://via.placeholder.com/50'"
+                                                            alt="Image" [ngStyle]="{
+                                                            'transform': activeZoomIndex === container.id ? 'scale(4) translateX(20px)' : 'scale(1)', 
+                                                            'transition': 'transform 0.2s ease-in-out'
+                                                        }" style="width: 50px; object-fit: cover;"
+                                                            (mousedown)="activeZoomIndex = container.id"
+                                                            (mouseup)="activeZoomIndex = -1"
+                                                            (mouseleave)="activeZoomIndex = -1">
+                                                        <span>&nbsp; {{ container.title }} <br>
+                                                            &nbsp; {{ container.length }}x{{ container.width }}x{{
+                                                            container.height }} m / {{ container.weight }} kg</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+
+                                </div>
+                            </div>
+
+
+                        </div>
+
+          
+                        <br>
+                        <button (click)="addContainment()" type="button" class="btn btn-primary">Ajouter</button>
+
+
+                    </div>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="card shadow-lg" style="opacity: 90%;">
+                    <div class="card-body">
+                        <h5 class="card-title">Etape 4: Selection Date du Départ</h5>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="trainDate" class="form-label">Date de Départ</label>
+                                <input type="date" class="form-control" id="trainDate" name="trainDate"
+                                #trainDate="ngModel" required [(ngModel)]="freight.trainDate">
+                            </div>
+                            <div *ngIf="trainDate.invalid && trainDate.touched" class="text-danger">
+                                La date départ est obligatoire
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="trainTime" class="form-label">Heure de Départ</label>
+                                <input type="time" class="form-control" id="trainTime"  name="trainTime"
+                                #trainTime="ngModel" required [(ngModel)]="freight.trainTime">
+                            </div>
+                            <div *ngIf="trainTime.invalid && trainTime.touched" class="text-danger">
+                                Le temp de départ est obligatoire
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Card 5 -->
+                <div class="card shadow-lg" style="opacity: 90%;">
+                    <div class="card-body">
+                        <h5 class="card-title">Step 5: Confirmer</h5>
+                        <p>Vérifiez toutes vos informations avant de soumettre.</p>
+                
+                        <!-- Description Input -->
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea id="description" class="form-control" [(ngModel)]="this.freight.description" name="description" rows="3" placeholder="Enter a description here"></textarea>
+                        </div>
+
+                        <div *ngIf="quality || time" class="row results mt-3">
+  
+                            <!-- Quality Card -->
+                            <div class="col-md-6 mb-3" *ngIf="quality">
+                              <div class="card text-center text-white bg-primary">
+                                <div class="card-body">
+                                  <h5 class="card-title">🔍 Qualité de la route</h5> <!-- Emoji added -->
+                                  <p class="card-text">{{ quality }}</p>
+                                </div>
+                              </div>
+                            </div>
+                          
+                            <!-- Time Card -->
+                            <div class="col-md-6 mb-3" *ngIf="time">
+                              <div class="card text-center text-white bg-primary">
+                                <div class="card-body">
+                                  <h5 class="card-title">⏱️ Durée approximative</h5> <!-- Emoji added -->
+                                  <p class="card-text">{{ time }} </p>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="col-md-12 mb-3" *ngIf="time">
+                                <div class="card text-center text-white bg-primary">
+                                  <div class="card-body">
+                                    <h5 class="card-title">📌 Info</h5> <!-- Emoji added -->
+                                    <p class="card-text">{{ description }} </p>
+                                  </div>
+                                </div>
+                              </div>
+                            
+                          </div>
+                          
+                
+                        <div class="col-md-4" *ngFor="let containment of containments; let i = index" style="min-height: 50px;">
+                            <div style="border: 1px solid lightgray; border-radius: 8px; padding: 10px; margin-bottom: 5px; display: flex; align-items: center; cursor: pointer;">
+                                <div style="display: flex; align-items: center;">
+                                    <img [src]="containment.resource?.photo" alt="Image"
+                                        [ngStyle]="{
+                                            'transform': activeZoomIndex === containment.resource?.id ? 'scale(4) translateX(20px)' : 'scale(1)', 
+                                            'transition': 'transform 0.2s ease-in-out'
+                                        }" style="width: 50px; object-fit: cover;" (mousedown)="activeZoomIndex = containment.resource?.id"
+                                        (mouseup)="activeZoomIndex = -1" (mouseleave)="activeZoomIndex = -1">
+                                    <span>&nbsp; {{ containment.resource?.title }} / {{ containment.resource?.owner?.lastName }}
+                                        {{ containment.resource?.owner?.firstName }} <br>
+                                        &nbsp; {{ containment.resource?.cost }} TND</span>
+                                </div>
+                            </div>
+                        </div>
+                
+                        <button type="submit" class="btn btn-primary">Confirmer</button>
+                    </div>
+                </div>
+                
+            </form>
+
+        </div>
+
+    </div>
+
+</div>

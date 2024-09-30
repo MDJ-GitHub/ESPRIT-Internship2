@@ -1,5 +1,6 @@
 package tn.esprit.espritinternship2back.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,12 +21,14 @@ public class Containment {
     @Id
     @GeneratedValue
     private Long id;
-    @OneToMany(cascade = CascadeType.DETACH, mappedBy="containment")
-    private List<Resource> resources = new ArrayList<Resource>();
-    @OneToMany
+
+    @OneToOne
+    private Resource resource;
+    @ManyToMany
     private List<Container> containers = new ArrayList<Container>();
+    @JsonIgnore
     @ManyToOne
-    private Freight freight = new Freight();
+    private Freight freight;
 
     private int state = 0;
 

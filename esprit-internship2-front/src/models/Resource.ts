@@ -1,20 +1,31 @@
 import { Containment } from './Containment';
 import { Personnel } from './Personnel';
+import { Station } from './Station';
 
 export interface Resource {
   id?: number;
-  creationDate?: string;
+  title?: string;
+  addedDate?: string;
   photo?: string;
   weight?: number;
+  width?: number;
+  length?: number;
+  height?: number;
   cost?: number;
   count?: number;
-  ressourceType?: RessourceType;
+  
+  resourceType?: ResourceType;
+  stationStart?: Station;
+  stationArrive?: Station;
+
+
   containment?: Containment;
   owner?: Personnel;
+
   state?: number;
 }
 
-export enum RessourceType {
+export enum ResourceType {
   Nutrition = 'Nutrition',
   Construction = 'Construction',
   Mineral = 'Mineral',

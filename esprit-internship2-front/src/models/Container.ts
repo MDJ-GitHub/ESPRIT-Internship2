@@ -3,6 +3,7 @@ import { Station } from './Station';
 
 export interface Container {
   id?: number;
+  title?: string;
   creationDate?: string;
   photo?: string;
   weight?: number;
@@ -11,9 +12,12 @@ export interface Container {
   length?: number;
   height?: number;
   cost?: number;
+
   containerType?: ContainerType;
-  containment?: Containment; 
   station?: Station; 
+
+  containment?: Containment; 
+
   state?: number;
 }
 

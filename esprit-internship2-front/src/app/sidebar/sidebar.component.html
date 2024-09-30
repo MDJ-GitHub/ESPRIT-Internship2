@@ -4,27 +4,27 @@
     <br>
     <br>
    
-    <div [ngClass]="{'btn btn-sm nav-item text-center': true, 'btn-primary': freightPage, 'btn-dark': !freightPage}">
+    <div (click)="routeFreight()" [ngClass]="{'btn btn-sm nav-item text-center': true, 'btn-primary': freightPage, 'btn-dark': !freightPage}">
         <i class="bi bi-stoplights-fill fs-3" data-bs-toggle="tooltip" data-bs-placement="right" title="Frêts"></i>
       </div>      
     <!-- Person Icon -->
-    <div [ngClass]="{'btn btn-sm nav-item text-center': true, 'btn-primary': personnelPage, 'btn-dark': !personnelPage}">
+    <div (click)="routePersonnel()" [ngClass]="{'btn btn-sm nav-item text-center': true, 'btn-primary': personnelPage, 'btn-dark': !personnelPage}">
       <i class="bi bi-person fs-3" data-bs-toggle="tooltip" data-bs-placement="right" title="Personnel"></i>
     </div>
     <!-- Resource Icon -->
-    <div [ngClass]="{'btn btn-sm nav-item text-center': true, 'btn-primary': resourcePage, 'btn-dark': !resourcePage}">
-      <i class="bi-box-seam fs-3" data-bs-toggle="tooltip" data-bs-placement="right" title="Ressources"></i>
+    <div (click)="routeResource()" [ngClass]="{'btn btn-sm nav-item text-center': true, 'btn-primary': resourcePage, 'btn-dark': !resourcePage}">
+      <i class="bi-box fs-3" data-bs-toggle="tooltip" data-bs-placement="right" title="Ressources"></i>
     </div>
     <!-- Container Icon -->
-    <div [ngClass]="{'btn btn-sm nav-item text-center': true, 'btn-primary': containerPage, 'btn-dark': !containerPage}">
+    <div (click)="routeContainer()" [ngClass]="{'btn btn-sm nav-item text-center': true, 'btn-primary': containerPage, 'btn-dark': !containerPage}">
       <i class="bi bi-box2 fs-3" data-bs-toggle="tooltip" data-bs-placement="right" title="Conteneurs"></i>
     </div>
     <!-- Train Icon -->
-    <div [ngClass]="{'btn btn-sm nav-item text-center': true, 'btn-primary': trainPage, 'btn-dark': !trainPage}">
+    <div (click)="routeTrain()" [ngClass]="{'btn btn-sm nav-item text-center': true, 'btn-primary': trainPage, 'btn-dark': !trainPage}">
       <i class="bi bi-train-lightrail-front fs-3" data-bs-toggle="tooltip" data-bs-placement="right" title="Trains"></i>
     </div>
     <!-- Cart Icon -->
-    <div [ngClass]="{'btn btn-sm nav-item text-center': true, 'btn-primary': carPage, 'btn-dark': !carPage}">
+    <div (click)="routeCar()" [ngClass]="{'btn btn-sm nav-item text-center': true, 'btn-primary': carPage, 'btn-dark': !carPage}">
       <i class="bi bi-minecart fs-3" data-bs-toggle="tooltip" data-bs-placement="right" title="Wagons"></i>
     </div>
   

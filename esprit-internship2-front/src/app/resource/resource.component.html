@@ -1,1 +1,362 @@
-<p>resource works!</p>
+<app-navbar [addResourceButton]="true"></app-navbar>
+<div style="display: flex; height: 100vh;">
+
+    <!-- Sidebar -->
+    <app-sidebar [resourcePage]="true"></app-sidebar>
+
+    <!-- Main Content -->
+    <form (ngSubmit)="addResource()" #resourceForm="ngForm">
+        <div class="popup-overlay" *ngIf="addResourceVisible$ | async">
+            <div class="popup-content">
+                <div class="row">
+                    <div class="col-md-4">
+                        <label for="length">Longueur (M)</label>
+                        <input type="number" id="length" class="form-control" placeholder="Entrez la longueur" required
+                            [(ngModel)]="resource.length" name="length" #length="ngModel" />
+                        <div *ngIf="length.invalid && length.touched" class="text-danger">La longueur est obligatoire
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="width">Largeur</label>
+                        <input type="number" id="width" class="form-control" placeholder="Entrez la largeur" required
+                            [(ngModel)]="resource.width" name="width" #width="ngModel" />
+                        <div *ngIf="width.invalid && width.touched" class="text-danger">La largeur est obligatoire</div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="height">Hauteur</label>
+                        <input type="number" id="height" class="form-control" placeholder="Entrez la hauteur" required
+                            [(ngModel)]="resource.height" name="height" #height="ngModel" />
+                        <div *ngIf="height.invalid && height.touched" class="text-danger">La hauteur est obligatoire
+                        </div>
+                    </div>
+                </div>
+                <!-- New Row with Cost and resource Type on Left, Image on Right -->
+                <div class="row mt-2">
+                    <div class="col-md-4">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="weight">Poids (Kg)</label>
+                                <input type="number" id="weight" class="form-control" placeholder="Entrez le poids"
+                                    required [(ngModel)]="resource.weight" name="weight" #weight="ngModel" />
+                                <div *ngIf="weight.invalid && weight.touched" class="text-danger">Le poids est
+                                    obligatoire</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="weight">Comte</label>
+                                <input type="number" id="count" class="form-control" placeholder="Entrez le comte"
+                                    required [(ngModel)]="resource.count" name="count" #count="ngModel" />
+                                <div *ngIf="count.invalid && count.touched" class="text-danger">Le poids est
+                                    obligatoire</div>
+                            </div>
+
+
+
+
+                            <div class="col-md-6">
+                                <label for="cost" class="mt-2">Coût (TND)</label>
+                                <input type="number" id="cost" class="form-control" placeholder="Entrez le coût"
+                                    required [(ngModel)]="resource.cost" name="cost" #cost="ngModel" />
+                                <div *ngIf="cost.invalid && cost.touched" class="text-danger">Le coût est obligatoire
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="title" class="mt-2">Titre</label>
+                                <input type="text" id="title" class="form-control" placeholder="Entrez le titre"
+                                    required [(ngModel)]="resource.title" name="title" #title="ngModel" />
+                                <div *ngIf="title.invalid && title.touched" class="text-danger">
+                                    Le titre est obligatoire
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="resourceType" class="mt-2">Type</label>
+                                <select id="resourceType" class="form-select" required
+                                    [(ngModel)]="resource.resourceType" name="resourceType" #resourceType="ngModel">
+                                    <option value="" disabled>Choisissez un type</option>
+                                    <option value="Nutrition">Nutrition</option>
+                                    <option value="Construction">Construction</option>
+                                    <option value="Mineral">Minéral</option>
+                                    <option value="Liquid">Liquide</option>
+                                    <option value="Special">Spécial</option>
+                                </select>
+
+                                <div *ngIf="resourceType.invalid && resourceType.touched" class="text-danger">
+                                    Le type de conteneur est obligatoire
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="trainAxe" class="mt-2">Axe</label>
+                                <select id="trainAxe" class="form-select" required [(ngModel)]="resource.trainAxe"
+                                    name="trainAxe" #trainAxe="ngModel" (change)="onTrainAxeChange($event)">
+                                    <option value="" disabled>Choisissez un axe</option>
+                                    <option value="Tunis_Sousse_Sfax_Gabes_Gafsa">Tunis-Sousse-Sfax-Gabes-Gafsa</option>
+                                    <option value="Tunis_LaGoulette">Tunis-LaGoulette</option>
+                                    <option value="Tunis_Gaafour_Djerissa_Kasserine">Tunis-Gaafour-Djerissa-Kasserine
+                                    </option>
+                                    <option value="Tunis_Beja_Ghardimaou">Tunis-Beja-Ghardimaou</option>
+                                    <option value="Tunis_Bizerte">Tunis-Bizerte</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="stationStart" class="mt-2">Départ</label>
+                                <select id="stationStart" class="form-select" required
+                                    [(ngModel)]="resource.stationStart" name="stationStart" #stationStart="ngModel">
+                                    <option value="" disabled>Choisissez un axe d'abord</option>
+                                    <option *ngFor="let station of stationsStart" [value]="station">{{ station }}
+                                    </option>
+                                </select>
+                                <div *ngIf="stationStart.invalid && stationStart.touched" class="text-danger">
+                                    La station de départ est obligatoire
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="stationArrive" class="mt-2">Destination</label>
+                                <select id="stationArrive" class="form-select" required
+                                    [(ngModel)]="resource.stationArrive" name="stationArrive" #stationArrive="ngModel">
+                                    <option value="" disabled>Choisissez un axe d'abord</option>
+                                    <option *ngFor="let station of stationsArrive" [value]="station">{{ station }}
+                                    </option>
+                                </select>
+                                <div *ngIf="stationArrive.invalid && stationArrive.touched" class="text-danger">
+                                    La station d'arrivée est obligatoire
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+
+
+                    <div class="col-md-4">
+                        <label for="imageInput">Télécharger Image</label>
+                        <input type="file" id="imageInput" class="form-control" (change)="onImageSelected($event)" />
+                        <div *ngIf="selectedImageUrl; else placeholder">
+                            <div class="card mt-3">
+                                <img [src]="selectedImageUrl" alt="Selected Image" class="img-fluid" />
+                            </div>
+                        </div>
+                        <ng-template #placeholder>
+                            <div class="card mt-3">
+                                <br><br><br><br><br><br><br><br>
+                            </div>
+                        </ng-template>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="col-md-12">
+                            <label for="client">Prénom/Nom Client</label>
+                            <input type="text" id="client" class="form-control" placeholder="Entrez le (Pré)nom Client"
+                                [(ngModel)]="resource.client" name="client" #client="ngModel"
+                                (ngModelChange)="retrieveClients()" />
+
+                        </div>
+
+
+                        <div class="col-md-12 mt-3" style="max-height: 194px; overflow-y: auto;">
+                            <div *ngFor="let user of users; let i = index" style="min-height: 50px;">
+                                <div (click)="toggleUserSelection(user)"
+                                    [ngClass]="{'bg-primary': isUserSelected(user)}"
+                                    style="border: 1px solid lightgray; border-radius: 8px; padding: 10px; margin-bottom: 5px; display: flex; align-items: center; cursor: pointer;">
+
+                                    <div style="display: flex; align-items: center;">
+                                        <img [src]="user.photo || 'https://via.placeholder.com/50'" alt="Image"
+                                            [ngStyle]="{
+                                            'transform': activeZoomIndex === user.id ? 'scale(4) translateX(20px)' : 'scale(1)', 
+                                            'transition': 'transform 0.2s ease-in-out'
+                                        }" style="width: 50px; object-fit: cover;"
+                                            (mousedown)="activeZoomIndex = user.id" (mouseup)="activeZoomIndex = -1"
+                                            (mouseleave)="activeZoomIndex = -1">
+                                        <span>&nbsp; {{ user.lastName }} {{ user.firstName }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+                <hr class="mt-4" />
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5>Ajouter un Conteneur</h5>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <button type="button" class="btn btn-secondary me-2" (click)="cancel()">Annuler</button>
+                        <button type="submit" class="btn btn-primary"
+                            [disabled]="resourceForm.invalid || clients.length === 0 || stationStart.value === stationArrive.value">Ajouter</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </form>
+
+
+    <div style="flex: 1; position: relative; display: flex;">
+
+        <div
+            style="flex: 1; display: flex; justify-content: center; align-items: center; text-align: center; position: relative;">
+            <div style="
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-image: url('assets/images/background2.jpg');
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+                opacity: 0.2;
+            "></div>
+
+            <div style="flex: 1; display: flex;">
+                <!-- Table Section -->
+                <div style="flex: 5; position: relative; padding: 12px; padding-right: 0px; z-index: 1;">
+                    <div style="height: 480px; overflow-y: auto; overflow-x: hidden; margin-top: 20px;">
+                        <table class="table table-bordered table-striped table-hover shadow" style="width: 100%;">
+                            <thead class="thead-dark" style="position: sticky; top: 0">
+                                <tr>
+                                    <th>Image</th>
+                                    <th>Titre</th>
+                                    <th>X</th>
+                                    <th>Dimensions</th>
+                                    <th>Poids</th>
+                                    <th>Stations</th>
+                                    <th>Type</th>
+                                    <th>Coût</th>
+                                    <th>Statut</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let resource of resources" (click)="togglePopup($event, resource.id)">
+                                    <td>
+                                        <div>
+                                            <img [src]="resource.photo || 'https://via.placeholder.com/50'" alt="Image"
+                                                [ngStyle]="{
+                                      'transform': activeZoomIndex === resource.id ? 'scale(5) translateX(20px)' : 'scale(1)', 
+                                      'transition': 'transform 0.2s ease-in-out'
+                                    }" style="width: 50px; object-fit: cover;"
+                                                (mouseover)="activeZoomIndex = resource.id"
+                                                (mouseup)="activeZoomIndex = -1" (mouseleave)="activeZoomIndex = -1">
+                                        </div>
+                                    </td>
+                                    <td>{{ resource.title }}</td>
+                                    <td>{{ resource.count }}</td>
+                                    <td data-bs-toggle="tooltip" data-bs-placement="right"
+                                        title="{{(resource.length ?? 0) * (resource.count ?? 0) * (resource.width ?? 0) * (resource.count ?? 0) * (resource.height ?? 0) * (resource.count ?? 0) }} m3">
+                                        {{ resource.length }}x{{ resource.width }}x{{ resource.height }}
+                                        /
+                                        {{ (resource.length ?? 0) * (resource.count ?? 0) }}x{{ (resource.width ?? 0) * (resource.count ?? 0) }}x{{ (resource.height ?? 0) * (resource.count ?? 0) }} M
+
+
+
+
+                                    </td>
+                                    <td>{{ resource.weight }}/ {{ (resource.weight ?? 0) * (resource.count ?? 0) }} Kg
+                                    </td>
+                                    <td>{{ resource.stationStart }} -> {{ resource.stationArrive }}</td>
+                                    <td>{{ resource.resourceType }}</td>
+                                    <td>{{ resource.cost}} TND</td>
+                                    <td [ngClass]="{
+                                    'bg-success text-white': resource.state === 0,
+                                    'bg-info text-white': resource.state === 2,
+                                    'bg-primary text-white': resource.state === 3,
+                                    'bg-secondary text-white': resource.state === 5,
+                                    'bg-danger text-white': resource.state === 4
+                                  }">
+                                        <ng-container *ngIf="resource.state === 0">Disp.</ng-container>
+                                        <ng-container *ngIf="resource.state === 2">Prog.</ng-container>
+                                        <ng-container *ngIf="resource.state === 3">En route</ng-container>
+                                        <ng-container *ngIf="resource.state === 5">Livré</ng-container>
+                                        <ng-container *ngIf="resource.state === 4">NonDisp.</ng-container>
+                                    </td>
+
+                                    <div *ngIf="popupFreightId === resource.id" [ngStyle]="{
+                                              'position': 'absolute', 
+                                              'background': 'white', 
+                                              'border': '1px solid #ccc', 
+                                              'box-shadow': '0px 4px 8px rgba(0, 0, 0, 0.1)', 
+                                              'padding': '10px', 
+                                              'border-radius': '5px', 
+                                              'z-index': '1000',
+                                              'top': popupPosition.top + 'px',
+                                              'left': popupPosition.left + 'px'
+                                            }" (click)="$event.stopPropagation()">
+                                        <ul style="list-style-type: none; padding: 0; margin: 0;">
+                                            <li style="margin-bottom: 5px; cursor: pointer;"
+                                                (click)="modifyF(resource)">📝 Modifier</li>
+                                            <li style="margin-bottom: 5px; cursor: pointer;"
+                                                (click)="deleteF(resource)">🗑️ Supprimer</li>
+                                            <li style="cursor: pointer;"
+                                                (click)="$event.stopPropagation(); cancelPopup()">❌ Annuler</li>
+                                        </ul>
+                                    </div>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+
+                <!-- Filter Card Section -->
+                <div style="flex: 1; padding: 10px; z-index: 1; padding-top: 31px;">
+                    <!-- Adjusted padding above the card -->
+                    <div class="card shadow rounded" style="width: 140px; padding: 16px; padding-top: 5px;">
+                        <div class="form-group">
+                            <label for="filterLength">Longueur</label>
+                            <input type="number" class="form-control" id="filterLength" placeholder="Longueur" [(ngModel)]="filter.length">
+                        </div>
+                        <div class="form-group">
+                            <label for="filterWidth">Largeur</label>
+                            <input type="number" class="form-control" id="filterWidth" placeholder="Largeur" [(ngModel)]="filter.width">
+                        </div>
+                        <div class="form-group">
+                            <label for="filterHeight">Hauteur</label>
+                            <input type="number" class="form-control" id="filterHeight" placeholder="Hauteur" [(ngModel)]="filter.height">
+                        </div>
+            
+                        <div class="form-group">
+                            <label for="filterWeight">Poids</label>
+                            <input type="number" class="form-control" id="filterWeight" placeholder="Poids" [(ngModel)]="filter.weight">
+                        </div>
+            
+                        <div class="form-group">
+                            <label for="filterCost">Coût</label>
+                            <input type="number" class="form-control" id="filterCost" placeholder="Coût" [(ngModel)]="filter.cost">
+                        </div>
+                        <div class="form-group">
+                            <label for="filterStationStart">Statut</label>
+                                    <select id="filterStationStart" class="form-select"
+                                        name="filterStationStart" [(ngModel)]="filter.state">
+                                        <option value="">Tout</option>
+                                        <option value="0">Disponible</option>
+                                        <option value="2">Programmé</option>
+                                        <option value="3">En route</option>
+                                        <option value="5">Livré</option>
+                                        <option value="4">Non Disponible</option>
+                                    </select> </div>
+                        <div>
+                            <input type="radio" id="inferior" name="comparison" value="inferior" [(ngModel)]="filter.comparison">
+                            <label for="inferior">Inférieur</label>
+                            <br>
+                            <input type="radio" id="superior" name="comparison" value="superior" [(ngModel)]="filter.comparison">
+                            <label for="superior">Supérieur</label>
+                        </div>
+                        <button type="button" class="btn btn-primary mt-1" (click)="applyFilter()">Filtrer</button>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

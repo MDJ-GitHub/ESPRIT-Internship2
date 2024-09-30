@@ -11,16 +11,12 @@ public class Config {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
-                        .anyRequest().authenticated()
-                )
-                .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html")
-                )
+                .authorizeHttpRequests(auth -> auth
+                        .anyRequest().permitAll())  // Allow all requests
+                .csrf(csrf -> csrf.disable())   // Explicitly disable CSRF
                 .headers(headers -> headers
-                        .frameOptions(frameOptions -> frameOptions.sameOrigin())
-                );
+                        .frameOptions(frameOptions -> frameOptions.disable())); // Optional: Disable frame options if using H2 console
         return http.build();
     }
 }
+

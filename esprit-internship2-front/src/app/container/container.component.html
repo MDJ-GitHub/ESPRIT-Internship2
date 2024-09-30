@@ -1,1 +1,295 @@
-<p>container works!</p>
+<app-navbar [addContainerButton]="true"></app-navbar>
+<div style="display: flex; height: 100vh;">
+
+    <!-- Sidebar -->
+    <app-sidebar [containerPage]="true"></app-sidebar>
+
+    <!-- Main Content -->
+    <form (ngSubmit)="addContainer()" #containerForm="ngForm">
+        <div class="popup-overlay" *ngIf="addContainerVisible$ | async">
+            <div class="popup-content">
+                <div class="row">
+                    <div class="col-md-4">
+                        <label for="length">Longueur</label>
+                        <input type="number" id="length" class="form-control" placeholder="Entrez la longueur" required
+                            [(ngModel)]="container.length" name="length" #length="ngModel" />
+                        <div *ngIf="length.invalid && length.touched" class="text-danger">La longueur est obligatoire
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="width">Largeur</label>
+                        <input type="number" id="width" class="form-control" placeholder="Entrez la largeur" required
+                            [(ngModel)]="container.width" name="width" #width="ngModel" />
+                        <div *ngIf="width.invalid && width.touched" class="text-danger">La largeur est obligatoire</div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="height">Hauteur</label>
+                        <input type="number" id="height" class="form-control" placeholder="Entrez la hauteur" required
+                            [(ngModel)]="container.height" name="height" #height="ngModel" />
+                        <div *ngIf="height.invalid && height.touched" class="text-danger">La hauteur est obligatoire
+                        </div>
+                    </div>
+                </div>
+                <!-- New Row with Cost and Container Type on Left, Image on Right -->
+                <div class="row mt-2">
+                    <div class="col-md-6">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="weight">Poids</label>
+                                <input type="number" id="weight" class="form-control" placeholder="Entrez le poids"
+                                    required [(ngModel)]="container.weight" name="weight" #weight="ngModel" />
+                                <div *ngIf="weight.invalid && weight.touched" class="text-danger">Le poids est
+                                    obligatoire</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="weightLimit">Limite de poids</label>
+                                <input type="number" id="weightLimit" class="form-control"
+                                    placeholder="Entrez la limite de poids" required [(ngModel)]="container.weightLimit"
+                                    name="weightLimit" #weightLimit="ngModel" />
+                                <div *ngIf="weightLimit.invalid && weightLimit.touched" class="text-danger">
+                                    La limite de poids est obligatoire
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <label for="station" class="mt-2">Station Initiale</label>
+                                <select id="station" class="form-select" required [(ngModel)]="container.station"
+                                    name="station" #station="ngModel">
+                                    <option value="" disabled>Choisissez une station</option>
+                                    <option value="Tunis">Tunis</option>
+                                    <option value="Sousse">Sousse</option>
+                                    <option value="Sfax">Sfax</option>
+                                    <option value="Gabes">Gabes</option>
+                                    <option value="Gafsa">Gafsa</option>
+                                    <option value="LaGoulette">LaGoulette</option>
+                                    <option value="Gaafour">Gaafour</option>
+                                    <option value="Djerissa">Djerissa</option>
+                                    <option value="Kasserine">Kasserine</option>
+                                    <option value="Beja">Beja</option>
+                                    <option value="Ghardimaou">Ghardimaou</option>
+                                    <option value="Bizerte">Bizerte</option>
+                                </select>
+
+                                <div *ngIf="station.invalid && station.touched" class="text-danger">
+                                    La station initiale est obligatoire
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label for="containerType" class="mt-2">Type de Conteneur</label>
+                                <select id="containerType" class="form-select" required
+                                    [(ngModel)]="container.containerType" name="containerType" #containerType="ngModel">
+                                    <option value="" disabled>Choisissez un type</option>
+                                    <option value="Metallic">Métallique</option>
+                                    <option value="Plastic">Plastique</option>
+                                    <option value="Wooden">Bois</option>
+                                    <option value="Cardboard">Carton</option>
+                                    <option value="Special">Spécial</option>
+                                </select>
+                                <div *ngIf="containerType.invalid && containerType.touched" class="text-danger">
+                                    Le type de conteneur est obligatoire
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="cost" class="mt-2">Coût</label>
+                                <input type="number" id="cost" class="form-control" placeholder="Entrez le coût"
+                                    required [(ngModel)]="container.cost" name="cost" #cost="ngModel" />
+                                <div *ngIf="cost.invalid && cost.touched" class="text-danger">Le coût est obligatoire
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="title" class="mt-2">Titre</label>
+                                <input type="text" id="title" class="form-control" placeholder="Entrez le titre"
+                                    required [(ngModel)]="container.title" name="title" #title="ngModel" />
+                                <div *ngIf="title.invalid && title.touched" class="text-danger">
+                                    Le titre est obligatoire
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+
+
+                    <div class="col-md-6">
+                        <label for="imageInput">Télécharger Image</label>
+                        <input type="file" id="imageInput" class="form-control" (change)="onImageSelected($event)" />
+                        <div *ngIf="selectedImageUrl; else placeholder">
+                            <div class="card mt-3">
+                                <img [src]="selectedImageUrl" alt="Selected Image" class="img-fluid" />
+                            </div>
+                        </div>
+                        <ng-template #placeholder>
+                            <div class="card mt-3">
+                                <br><br><br><br><br><br><br><br>
+                            </div>
+                        </ng-template>
+                    </div>
+                </div>
+
+                <hr class="mt-4" />
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5 *ngIf="modify">Modifier un Conteneur</h5>
+                        <h5 *ngIf="!modify">Ajouter un Conteneur</h5>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <button type="button" class="btn btn-secondary me-2" (click)="cancel()">Annuler</button>
+                        <button type="submit" class="btn btn-primary"
+                            [disabled]="containerForm.invalid">Appliquer</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </form>
+
+
+    <div style="flex: 1; position: relative; display: flex;">
+
+        <div
+            style="flex: 1; display: flex; justify-content: center; align-items: center; text-align: center; position: relative;">
+            <div style="
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-image: url('assets/images/background2.jpg');
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+                opacity: 0.2;
+            "></div>
+
+            <div style="flex: 1; display: flex;">
+                <!-- Table Section -->
+                <div style="flex: 5; position: relative; padding: 12px; padding-right: 0px; z-index: 1;">
+                    <div style="height: 480px; overflow-y: auto; overflow-x: hidden; margin-top: 20px;">
+                        <table class="table table-bordered table-striped table-hover shadow" style="width: 100%;">
+                            <thead class="thead-dark" style="position: sticky; top: 0">
+                                <tr>
+                                    <th>Image</th>
+                                    <th>Titre</th>
+                                    <th>Dimensions</th>
+                                    <th>Poids</th>
+                                    <th>Station</th>
+                                    <th>Coût</th>
+                                    <th>Statut</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let container of containers" (click)="togglePopup($event, container.id)">
+                                    <td>
+                                        <div>
+                                            <img [src]="container.photo || 'https://via.placeholder.com/50'" alt="Image"
+                                                [ngStyle]="{
+                                      'transform': activeZoomIndex === container.id ? 'scale(5) translateX(20px)' : 'scale(1)', 
+                                      'transition': 'transform 0.2s ease-in-out'
+                                    }" style="width: 50px; object-fit: cover;"
+                                                (mouseover)="activeZoomIndex = container.id"
+                                                (mouseup)="activeZoomIndex = -1" (mouseleave)="activeZoomIndex = -1">
+                                        </div>
+                                    </td>
+                                    <td>{{ container.title }}</td>
+                                    <td>{{ container.length }}x{{ container.width }}x{{ container.height }} M</td>
+                                    <td>{{ container.weight }}/{{ container.weightLimit }} Kg</td>
+                                    <td>{{ container.station }}</td>
+                                    <td>{{ container.cost }} TND</td>
+                                    <td [ngClass]="{
+                                        'bg-success text-white': container.state === 0,
+                                        'bg-info text-white': container.state === 2,
+                                        'bg-primary text-white': container.state === 3,
+                                        'bg-danger text-white': container.state === 4
+                                      }">
+                                        <ng-container *ngIf="container.state === 0">Disponible</ng-container>
+                                        <ng-container *ngIf="container.state === 2">Programmé</ng-container>
+                                        <ng-container *ngIf="container.state === 3">En route</ng-container>
+                                        <ng-container *ngIf="container.state === 4">Non Disponible</ng-container>
+                                    </td>
+
+                                    <div *ngIf="popupFreightId === container.id" [ngStyle]="{
+                                                  'position': 'absolute', 
+                                                  'background': 'white', 
+                                                  'border': '1px solid #ccc', 
+                                                  'box-shadow': '0px 4px 8px rgba(0, 0, 0, 0.1)', 
+                                                  'padding': '10px', 
+                                                  'border-radius': '5px', 
+                                                  'z-index': '1000',
+                                                  'top': popupPosition.top + 'px',
+                                                  'left': popupPosition.left + 'px'
+                                                }" (click)="$event.stopPropagation()">
+                                        <ul style="list-style-type: none; padding: 0; margin: 0;">
+                                            <li style="margin-bottom: 5px; cursor: pointer;"
+                                                (click)="modifyF(container)">📝 Modifier</li>
+                                            <li style="margin-bottom: 5px; cursor: pointer;"
+                                                (click)="deleteF(container)">🗑️ Supprimer</li>
+                                            <li style="cursor: pointer;"
+                                                (click)="$event.stopPropagation(); cancelPopup()">❌ Annuler</li>
+                                        </ul>
+                                    </div>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+
+                <!-- Filter Card Section -->
+                <div style="flex: 1; padding: 10px; z-index: 1; padding-top: 31px;">
+                    <!-- Adjusted padding above the card -->
+                    <div class="card shadow rounded" style="width: 140px; padding: 16px; padding-top: 5px;">
+                        <div class="form-group">
+                            <label for="filterLength">Longueur</label>
+                            <input type="number" class="form-control" id="filterLength" placeholder="Longueur" [(ngModel)]="filter.length">
+                        </div>
+                        <div class="form-group">
+                            <label for="filterWidth">Largeur</label>
+                            <input type="number" class="form-control" id="filterWidth" placeholder="Largeur" [(ngModel)]="filter.width">
+                        </div>
+                        <div class="form-group">
+                            <label for="filterHeight">Hauteur</label>
+                            <input type="number" class="form-control" id="filterHeight" placeholder="Hauteur" [(ngModel)]="filter.height">
+                        </div>
+
+
+                        <div class="form-group">
+                            <label for="filterWeightLimit">Poids</label>
+                            <input type="number" class="form-control" id="filterWeightLimit" placeholder="Poids" [(ngModel)]="filter.weight">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="filterCost">Coût</label>
+                            <input type="number" class="form-control" id="filterCost" placeholder="Coût" [(ngModel)]="filter.cost">
+                        </div>
+                        <div class="form-group">
+                            <label for="filterStationStart">Statut</label>
+                                    <select id="filterStationStart" class="form-select"
+                                        name="filterStationStart" [(ngModel)]="filter.state">
+                                        <option value="">Tout</option>
+                                        <option value="0">Disponible</option>
+                                        <option value="2">Programmé</option>
+                                        <option value="3">En route</option>
+                                        <option value="5">Livré</option>
+                                        <option value="4">Non Disponible</option>
+                                    </select> </div>
+                        <div>
+                        <div>
+                            <input type="radio" id="inferior" name="comparison" value="inferior" [(ngModel)]="filter.comparison">
+                            <label for="inferior">Inférieur</label>
+                            <br>
+                            <input type="radio" id="superior" name="comparison" value="superior" [(ngModel)]="filter.comparison">
+                            <label for="superior">Supérieur</label>
+                        </div>
+                        <button type="button" class="btn btn-primary mt-1" (click)="applyFilter()">Filtrer</button>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

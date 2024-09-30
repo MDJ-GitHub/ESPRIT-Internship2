@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { Router } from '@angular/router';
 declare var bootstrap: any;
 
 @Component({
@@ -15,11 +16,30 @@ export class SidebarComponent {
   @Input() trainPage: boolean = false; 
   @Input() carPage: boolean = false; 
   
-  constructor() { }
+  constructor(private router: Router) {}
 
   ngAfterViewInit(): void {
     const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     tooltipTriggerList.map((tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl));
+  }
+
+  routeFreight() {
+    this.router.navigate(['/freight']);
+  }
+  routePersonnel() {
+    this.router.navigate(['/personnel']);
+  }
+  routeResource() {
+    this.router.navigate(['/resource']);
+  }
+  routeContainer() {
+    this.router.navigate(['/container']);
+  }
+  routeTrain() {
+    this.router.navigate(['/train']);
+  }
+  routeCar() {
+    this.router.navigate(['/car']);
   }
 
 }

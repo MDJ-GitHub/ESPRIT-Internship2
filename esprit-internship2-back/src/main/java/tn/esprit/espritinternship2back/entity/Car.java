@@ -1,5 +1,6 @@
 package tn.esprit.espritinternship2back.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,7 +18,7 @@ public class Car {
     @Id
     @GeneratedValue
     private Long id;
-    private LocalDateTime creationDate;
+    private String title;
     @Lob
     @Column(columnDefinition = "LONGTEXT")
     private String photo = "";
@@ -28,12 +29,13 @@ public class Car {
     private Float heightLimit;
     private Float cost;
 
-    @ManyToOne
-    private Train train = new Train();
-    @ManyToOne
-    private Station station = new Station();
+    @Enumerated(EnumType.STRING)
+    private Station station;
 
+    @JsonIgnore
+    @ManyToOne
+    private Train train;
 
-    private int state = 0;
+    private int state = 2;
 
 }
