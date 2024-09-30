@@ -128,13 +128,13 @@
 
                 <div class="row">
                     <div class="col-md-6">
-                 
+
                         <h5 *ngIf="modify">Modifier un Train</h5>
                         <h5 *ngIf="!modify">Ajouter un Train</h5>
                     </div>
                     <div class="col-md-6 text-end">
                         <button type="button" class="btn btn-secondary me-2" (click)="cancel()">Annuler</button>
-                       
+
                         <button type="submit" class="btn btn-primary" [disabled]="trainForm.invalid">Appliquer</button>
                     </div>
                 </div>
@@ -167,51 +167,52 @@
                 <!-- Table Section -->
                 <div style="flex: 5; position: relative; padding: 12px; padding-right: 0px; z-index: 1;">
                     <div style="height: 480px; overflow-y: auto; overflow-x: hidden; margin-top: 20px;">
-                        <table class="table table-bordered table-striped table-hover shadow" style="width: 100%;">
-                            <thead class="thead-dark" style="position: sticky; top: 0">
-                                <tr>
-                                    <th>Image</th>
-                                    <th>Titre</th>
-                                    <th>Wag.</th>
-                                    <th>Vitesse</th>
-                                    <th>Poid</th>
-                                    <th>Coût</th>
-                                    <th>Axe</th>
-                                    <th>Statut</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr *ngFor="let train of trains" (click)="togglePopup($event, train.id)" >
-                                    <td>
-                                        <div>
-                                            <img [src]="train.photo || 'https://via.placeholder.com/50'" alt="Image"
-                                                [ngStyle]="{
+                        <div id="pdf-content">
+                            <table class="table table-bordered table-striped table-hover shadow" style="width: 100%;">
+                                <thead class="thead-dark" style="position: sticky; top: 0">
+                                    <tr>
+                                        <th>Image</th>
+                                        <th>Titre</th>
+                                        <th>Wag.</th>
+                                        <th>Vitesse</th>
+                                        <th>Poid</th>
+                                        <th>Coût</th>
+                                        <th>Axe</th>
+                                        <th>Statut</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let train of trains" (click)="togglePopup($event, train.id)">
+                                        <td>
+                                            <div>
+                                                <img [src]="train.photo || 'https://via.placeholder.com/50'" alt="Image"
+                                                    [ngStyle]="{
                                       'transform': activeZoomIndex === train.id ? 'scale(5) translateX(20px)' : 'scale(1)', 
                                       'transition': 'transform 0.2s ease-in-out'
-                                    }" style="width: 50px; object-fit: cover;"
-                                                (mouseover)="activeZoomIndex = train.id"
-                                                (mouseup)="activeZoomIndex = -1" (mouseleave)="activeZoomIndex = -1">
-                                        </div>
-                                    </td>
-                                    <td>{{ train.title }}</td>
-                                    <td>{{ train.cars?.length }}</td>
-                                    <td>{{ train.speed }} Km/H</td>
-                                    <td>{{ train.weight }} Kg</td>
-                                    <td>{{ train.cost }} TND</td>
-                                    <td>{{ train.trainAxe }}</td>
-                                    <td [ngClass]="{
+                                    }" style="width: 50px; object-fit: cover;" (mouseover)="activeZoomIndex = train.id"
+                                                    (mouseup)="activeZoomIndex = -1"
+                                                    (mouseleave)="activeZoomIndex = -1">
+                                            </div>
+                                        </td>
+                                        <td>{{ train.title }}</td>
+                                        <td>{{ train.cars?.length }}</td>
+                                        <td>{{ train.speed }} Km/H</td>
+                                        <td>{{ train.weight }} Kg</td>
+                                        <td>{{ train.cost }} TND</td>
+                                        <td>{{ train.trainAxe }}</td>
+                                        <td [ngClass]="{
                                     'bg-success text-white': train.state === 0,
                                     'bg-info text-white': train.state === 2,
                                     'bg-primary text-white': train.state === 3,
                                     'bg-warning text-dark': train.state === 5,
                                     'bg-danger text-white': train.state === 4
                                   }">
-                                        <ng-container *ngIf="train.state === 0">Disp.</ng-container>
-                                        <ng-container *ngIf="train.state === 2">Progr.</ng-container>
-                                        <ng-container *ngIf="train.state === 3">Enroute</ng-container>
-                                        <ng-container *ngIf="train.state === 5">Aucunwagon</ng-container>
-                                        <ng-container *ngIf="train.state === 4">NonDisp</ng-container>
-                                    </td>
+                                            <ng-container *ngIf="train.state === 0">Disp.</ng-container>
+                                            <ng-container *ngIf="train.state === 2">Progr.</ng-container>
+                                            <ng-container *ngIf="train.state === 3">Enroute</ng-container>
+                                            <ng-container *ngIf="train.state === 5">Aucunwagon</ng-container>
+                                            <ng-container *ngIf="train.state === 4">NonDisp</ng-container>
+                                        </td>
 
                                         <div *ngIf="popupFreightId === train.id" [ngStyle]="{
                                               'position': 'absolute', 
@@ -224,17 +225,20 @@
                                               'top': popupPosition.top + 'px',
                                               'left': popupPosition.left + 'px'
                                             }" (click)="$event.stopPropagation()">
-                                          <ul style="list-style-type: none; padding: 0; margin: 0;">
-                                            <li style="margin-bottom: 5px; cursor: pointer;" (click)="modifyF(train)">📝 Modifier</li>
-                                            <li style="margin-bottom: 5px; cursor: pointer;" (click)="deleteF(train)">🗑️ Supprimer</li>
-                                            <li style="cursor: pointer;" (click)="$event.stopPropagation(); cancelPopup()">❌ Annuler</li>
-                                          </ul>
+                                            <ul style="list-style-type: none; padding: 0; margin: 0;">
+                                                <li style="margin-bottom: 5px; cursor: pointer;"
+                                                    (click)="modifyF(train)">📝 Modifier</li>
+                                                <li style="margin-bottom: 5px; cursor: pointer;"
+                                                    (click)="deleteF(train)">🗑️ Supprimer</li>
+                                                <li style="cursor: pointer;"
+                                                    (click)="$event.stopPropagation(); cancelPopup()">❌ Annuler</li>
+                                            </ul>
                                         </div>
-                                    
-                                </tr>
-                            </tbody>
-                        </table>
 
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
 
@@ -243,58 +247,64 @@
                     <!-- Adjusted padding above the card -->
                     <div class="card shadow rounded" style="width: 140px; padding: 16px;">
                         <div class="form-group">
-                            <label for="filterAxe" >Axe</label>
-                            <select id="filterAxe" class="form-select"  [(ngModel)]="filter.axe"
-                                name="filterAxe">
-                                <option value="" >Tout</option>
+                            <label for="filterAxe">Axe</label>
+                            <select id="filterAxe" class="form-select" [(ngModel)]="filter.axe" name="filterAxe">
+                                <option value="">Tout</option>
                                 <option value="Tunis_Sousse_Sfax_Gabes_Gafsa">Tunis-Sousse-Sfax-Gabes-Gafsa</option>
                                 <option value="Tunis_LaGoulette">Tunis-LaGoulette</option>
                                 <option value="Tunis_Gaafour_Djerissa_Kasserine">Tunis-Gaafour-Djerissa-Kasserine
                                 </option>
                                 <option value="Tunis_Beja_Ghardimaou">Tunis-Beja-Ghardimaou</option>
                                 <option value="Tunis_Bizerte">Tunis-Bizerte</option>
-                            </select>  </div>
+                            </select>
+                        </div>
                         <div class="form-group">
                             <label for="filterCars">Cars</label>
-                            <input type="number" class="form-control" id="filterCars" placeholder="Cars" [(ngModel)]="filter.cars">
+                            <input type="number" class="form-control" id="filterCars" placeholder="Cars"
+                                [(ngModel)]="filter.cars">
                         </div>
 
                         <div class="form-group">
                             <label for="filterSpeed">Vitesse</label>
-                            <input type="number" class="form-control" id="filterSpeed" placeholder="Vitesse" [(ngModel)]="filter.speed">
+                            <input type="number" class="form-control" id="filterSpeed" placeholder="Vitesse"
+                                [(ngModel)]="filter.speed">
                         </div>
 
                         <div class="form-group">
                             <label for="filterCost">Coût</label>
-                            <input type="number" class="form-control" id="filterCost" placeholder="Coût" [(ngModel)]="filter.cost" >
+                            <input type="number" class="form-control" id="filterCost" placeholder="Coût"
+                                [(ngModel)]="filter.cost">
                         </div>
                         <div class="form-group">
                             <label for="filterStationStart">Statut</label>
-                                    <select id="filterStationStart" class="form-select"
-                                        name="filterStationStart" [(ngModel)]="filter.state">
-                                        <option value="">Tout</option>
-                                        <option value="0">Disponible</option>
-                                        <option value="2">Programmé</option>
-                                        <option value="3">En route</option>
-                                        <option value="5">Livré</option>
-                                        <option value="4">Non Disponible</option>
-                                    </select> </div>
-                        <div>
-                        <div>
-                            <input type="radio" id="inferior" name="comparison" value="inferior" [(ngModel)]="filter.comparison">
-                            <label for="inferior">Inférieur</label>
-                            <br>
-                            <input type="radio" id="superior" name="comparison" value="superior" [(ngModel)]="filter.comparison">
-                            <label for="superior">Supérieur</label>
+                            <select id="filterStationStart" class="form-select" name="filterStationStart"
+                                [(ngModel)]="filter.state">
+                                <option value="">Tout</option>
+                                <option value="0">Disponible</option>
+                                <option value="2">Programmé</option>
+                                <option value="3">En route</option>
+                                <option value="5">Livré</option>
+                                <option value="4">Non Disponible</option>
+                            </select>
                         </div>
-                        <button type="button" class="btn btn-primary mt-3" (click)="applyFilter()">Filtrer</button>
-                    </div>
+                        <div>
+                            <div>
+                                <input type="radio" id="inferior" name="comparison" value="inferior"
+                                    [(ngModel)]="filter.comparison">
+                                <label for="inferior">Inférieur</label>
+                                <br>
+                                <input type="radio" id="superior" name="comparison" value="superior"
+                                    [(ngModel)]="filter.comparison">
+                                <label for="superior">Supérieur</label>
+                            </div>
+                            <button type="button" class="btn btn-primary mt-3" (click)="applyFilter()">Filtrer</button>
+                        </div>
 
+                    </div>
                 </div>
+
             </div>
 
         </div>
 
     </div>
-
-</div>

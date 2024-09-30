@@ -3,6 +3,7 @@ import { Freight } from 'src/models/Freight';
 import { Station } from 'src/models/Station';
 import { Services } from 'src/services/services';
 
+
 @Component({
   selector: 'app-freight',
   templateUrl: './freight.component.html',

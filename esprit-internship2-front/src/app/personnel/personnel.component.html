@@ -28,7 +28,7 @@
               Le nom est obligatoire
             </div>
           </div>
-         
+
         </div>
 
         <!-- Second Row: Phone and Email -->
@@ -79,7 +79,7 @@
                   <option value="Mechanic">Mécanicien</option>
                   <option value="Technician">Technicien</option>
                   <option value="Monitor">Moniteur</option>
-                </select>                
+                </select>
                 <!-- Validation message for role -->
                 <div *ngIf="role.invalid && role.touched" class="text-danger">
                   Le rôle est obligatoire
@@ -131,7 +131,7 @@
           <div class="col-md-6">
             <h5 *ngIf="modify">Modifier un Personnel</h5>
             <h5 *ngIf="!modify">Ajouter un Personnel</h5>
-  
+
           </div>
           <div class="col-md-6 text-end">
             <button type="button" class="btn btn-secondary me-2" (click)="addPersonnel()">Annuler</button>
@@ -164,35 +164,36 @@
         <!-- Table Section -->
         <div style="flex: 5; position: relative; padding: 12px; padding-right: 0px; z-index: 1;">
           <div style="height: 480px; overflow-y: auto; overflow-x: hidden; margin-top: 20px;">
-            <table class="table table-bordered table-striped table-hover shadow" style="width: 100%;">
-              <thead class="thead-dark" style="position: sticky; top: 0">
-                <tr>
-                  <th>Photo</th>
-                  <th>Nom</th>
-                  <th>Prenom</th>
-                  <th>Rôle</th>
-                  <th>Tel.</th>
-                  <th>Email</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let personnel of personnels" (click)="togglePopup($event, personnel.id)">
-                  <td>
-                  <div>
-                    <img [src]="personnel.photo || 'https://via.placeholder.com/50'" alt="Image"
-                        [ngStyle]="{
+            <div id="pdf-content">
+              <table class="table table-bordered table-striped table-hover shadow" style="width: 100%;">
+                <thead class="thead-dark" style="position: sticky; top: 0">
+                  <tr>
+                    <th>Photo</th>
+                    <th>Nom</th>
+                    <th>Prenom</th>
+                    <th>Rôle</th>
+                    <th>Tel.</th>
+                    <th>Email</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let personnel of personnels" (click)="togglePopup($event, personnel.id)">
+                    <td>
+                      <div>
+                        <img [src]="personnel.photo || 'https://via.placeholder.com/50'" alt="Image" [ngStyle]="{
               'transform': activeZoomIndex === personnel.id ? 'scale(4) translateX(20px)' : 'scale(1)', 
               'transition': 'transform 0.2s ease-in-out'
-            }" style="width: 50px; object-fit: cover;"
-                        (mousedown)="activeZoomIndex = personnel.id"
-                        (mouseup)="activeZoomIndex = -1" (mouseleave)="activeZoomIndex = -1">
-                </div></td>  <td>{{ personnel.lastName }}</td>
-                  <td>{{ personnel.firstName }}</td>
-                  <td>{{ personnel.personnelRole }}</td>
-                  <td>{{ personnel.phone }}</td>
-                  <td>{{ personnel.email }}</td>
+            }" style="width: 50px; object-fit: cover;" (mousedown)="activeZoomIndex = personnel.id"
+                          (mouseup)="activeZoomIndex = -1" (mouseleave)="activeZoomIndex = -1">
+                      </div>
+                    </td>
+                    <td>{{ personnel.lastName }}</td>
+                    <td>{{ personnel.firstName }}</td>
+                    <td>{{ personnel.personnelRole }}</td>
+                    <td>{{ personnel.phone }}</td>
+                    <td>{{ personnel.email }}</td>
 
-                  <div *ngIf="popupFreightId === personnel.id" [ngStyle]="{
+                    <div *ngIf="popupFreightId === personnel.id" [ngStyle]="{
                     'position': 'absolute', 
                     'background': 'white', 
                     'border': '1px solid #ccc', 
@@ -203,20 +204,19 @@
                     'top': popupPosition.top + 'px',
                     'left': popupPosition.left + 'px'
                   }" (click)="$event.stopPropagation()">
-                            <ul style="list-style-type: none; padding: 0; margin: 0;">
-                                <li style="margin-bottom: 5px; cursor: pointer;" (click)="modifyF(personnel)">
-                                    📝 Modifier</li>
-                                <li style="margin-bottom: 5px; cursor: pointer;" (click)="deleteF(personnel)">
-                                    🗑️ Supprimer</li>
-                                <li style="cursor: pointer;"
-                                    (click)="$event.stopPropagation(); cancelPopup()">❌ Annuler</li>
-                            </ul>
-                        </div>
+                      <ul style="list-style-type: none; padding: 0; margin: 0;">
+                        <li style="margin-bottom: 5px; cursor: pointer;" (click)="modifyF(personnel)">
+                          📝 Modifier</li>
+                        <li style="margin-bottom: 5px; cursor: pointer;" (click)="deleteF(personnel)">
+                          🗑️ Supprimer</li>
+                        <li style="cursor: pointer;" (click)="$event.stopPropagation(); cancelPopup()">❌ Annuler</li>
+                      </ul>
+                    </div>
 
-                </tr>
-              </tbody>
-            </table>
-            
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
 
@@ -234,7 +234,7 @@
             <div class="form-group">
               <label for="filterRole">Rôle</label>
               <select class="form-control" id="filterRole" [(ngModel)]="filter.role">
-                <option value=""  selected>Tout</option>
+                <option value="" selected>Tout</option>
                 <option>Client</option>
               </select>
             </div>
