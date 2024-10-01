@@ -3,14 +3,14 @@
     <div class="login-container row" style="background-color: rgba(32, 32, 32, 0.8); padding: 20px; border-radius: 10px; max-width: 800px; display: flex;">
         <div class="login-form col-md-6" style="flex: 1; margin-right: 20px;">
             <h3 style="color: white;">Connecter</h3>
-            <form>
+            <form (ngSubmit)="login()">
                 <div class="mb-3">
                     <label for="username" class="form-label" style="color: white;">Nom Utilisateur / Num. Téléphone</label>
-                    <input type="text" class="form-control" id="username" placeholder="Entrer Nom/Tel">
+                    <input type="text" class="form-control" id="username" placeholder="Entrer Nom/Tel" [(ngModel)]="user.name" name="name">
                 </div>
                 <div class="mb-3">
                     <label for="password" class="form-label" style="color: white;">Mot de Passe</label>
-                    <input type="password" class="form-control" id="password" placeholder="Entrer MdP">
+                    <input type="password" class="form-control" id="password" placeholder="Entrer MdP" [(ngModel)]="user.password" name="password">
                 </div>
                 <button type="submit" class="btn btn-primary">Accéder</button>
             </form>

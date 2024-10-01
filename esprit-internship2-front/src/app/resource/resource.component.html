@@ -185,12 +185,14 @@
 
                 <div class="row">
                     <div class="col-md-6">
-                        <h5>Ajouter un Conteneur</h5>
+                        
+                        <h5 *ngIf="modify">Modifier un Resource</h5>
+                        <h5 *ngIf="!modify">Ajouter un Resource</h5>
                     </div>
                     <div class="col-md-6 text-end">
                         <button type="button" class="btn btn-secondary me-2" (click)="cancel()">Annuler</button>
                         <button type="submit" class="btn btn-primary"
-                            [disabled]="resourceForm.invalid || clients.length === 0 || stationStart.value === stationArrive.value">Ajouter</button>
+                            [disabled]="resourceForm.invalid || clients.length === 0 || stationStart.value === stationArrive.value">Appliquer</button>
                     </div>
                 </div>
 

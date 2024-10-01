@@ -8,17 +8,18 @@ import { TrainComponent } from './train/train.component';
 import { ContainerComponent } from './container/container.component';
 import { CarComponent } from './car/car.component';
 import { AddFreightComponent } from './add-freight/add-freight.component';
+import { AuthGuard } from './auth.guard';
 
 const routes: Routes = [
   { path:'' , redirectTo: 'home', pathMatch: 'full'},
-  { path: 'home', component : HomeComponent }, 
-  { path: 'freight', component : FreightComponent },
-  { path: 'freight/add', component : AddFreightComponent },
-  { path: 'personnel', component : PersonnelComponent },
-  { path: 'resource', component : ResourceComponent },
-  { path: 'container', component : ContainerComponent },
-  { path: 'train', component : TrainComponent },
-  { path: 'car', component : CarComponent },
+  { path: 'home', component : HomeComponent,  }, 
+  { path: 'freight', component : FreightComponent, canActivate: [AuthGuard] },
+  { path: 'freight/add', component : AddFreightComponent, canActivate: [AuthGuard] },
+  { path: 'personnel', component : PersonnelComponent, canActivate: [AuthGuard] },
+  { path: 'resource', component : ResourceComponent, canActivate: [AuthGuard] },
+  { path: 'container', component : ContainerComponent, canActivate: [AuthGuard] },
+  { path: 'train', component : TrainComponent, canActivate: [AuthGuard] },
+  { path: 'car', component : CarComponent, canActivate: [AuthGuard] },
   { path: '**', component : HomeComponent }
   ];
 

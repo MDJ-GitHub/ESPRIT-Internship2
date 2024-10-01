@@ -22,6 +22,7 @@ export class AddFreightComponent {
 
   quality: string | null = null;
   time: string | null = null;
+  timef: string | null = null;
   description: string | null = null;
 
   selectedResources: Resource[] = [];
@@ -186,6 +187,8 @@ export class AddFreightComponent {
         this.selectedResources = [];
 
         console.log(this.containments);
+
+        this.predict()
       } else {
         // Alert in French if the total weight limit is insufficient
         alert("Poids insuffisant pour stocker la ressource.");
@@ -238,7 +241,7 @@ export class AddFreightComponent {
 
             this.containers = this.containers.filter(c => c.id !== container.id);
             this.resources = this.resources.filter(r => !this.selectedResources.includes(r));
-
+            this.predict()
             return;
         }
     }
@@ -268,7 +271,7 @@ export class AddFreightComponent {
 
                 this.containers = this.containers.filter(container => !combination.includes(container));
                 this.resources = this.resources.filter(r => !this.selectedResources.includes(r));
-
+                this.predict()
                 return;
             }
         }
@@ -346,6 +349,7 @@ autoAddAllResources() {
               this.containers = this.containers.filter(c => c.id !== container.id);
               this.resources = this.resources.filter(r => r !== resource);
               resourceContained = true;
+              this.predict()
               break;
           }
       }
@@ -379,6 +383,7 @@ autoAddAllResources() {
                       this.resources = this.resources.filter(r => r !== resource);
 
                       resourceContained = true;
+                      this.predict()
                       break;
                   }
               }
@@ -404,7 +409,6 @@ autoAddAllResources() {
 
     this.selectedResources = [];
     if (this.freight.stationStart && this.freight.stationArrive) {
-      this.predict()
       this.services.retrieveResourcesByStation(this.freight.stationStart, this.freight.stationArrive).subscribe(
         (response) => {
           this.resources = response.filter(res => res.state === 0);
@@ -429,7 +433,6 @@ autoAddAllResources() {
   }
 
   retrieveTrainsByAxe() {
-    this.predict()
     this.services.retrieveTrainsByAxe(this.freight.trainAxe).subscribe(
       (response) => {
         this.trains = response.filter(tra => tra.state === 0);
@@ -494,8 +497,25 @@ autoAddAllResources() {
   }
 
   predict() {
+    let result = `et prédire combien de temps cela prend-il pour charger ces conteneurs : `;
 
-    this.services.askQuestion('Soyez précis. En Tunisie, dites-moi la qualité du rail du train de marchandises entre ' + this.freight.stationStart as string + ' et ' + this.freight.stationArrive as string + ' et combien de temps il faut pour arriver et une description du voyage, écrivez-la comme ceci: Qualité = Valeur et Temp = Valeur et Description = Valeur.').subscribe((response: any) => {
+    this.containments.forEach((x: any) => {
+
+      x.containers.forEach((container: any) => {
+      result += `- Conteneur (Largeur: ${container.width}, Hauteur: ${container.height}, Longueur: ${container.length}, Poids: ${container.weight}) , `;
+    });
+    });
+  
+    // Loop through resources and extract their details
+    result += " avec ces ressources : ";
+    this.containments.forEach((x: any) => {
+      result += `- Ressource (Largeur: ${x.resource.width}, Hauteur: ${x.resource.height}, Longueur: ${x.resource.length}, Poids: ${x.resource.weight}) , `;
+    });
+  
+    // Add the final part about the freight train
+    result += " dans le train de fret";
+
+    this.services.askQuestion('En Tunisie, dites-moi la qualité du rail du train de marchandises entre ' + this.freight.stationStart as string + ' et ' + this.freight.stationArrive as string + ' et combien de temps il faut pour arriver et  '+ result + ' et un description de voyage avec un fait ammusant for fun, Just answer anyway and put the results in just like this: Qualité = One mot et Temp = Valeur et TempFret = Valeur par minutes et Description = valeur.').subscribe((response: any) => {
       const responseText = response?.candidates?.[0]?.content?.parts?.[0]?.text;
       console.log(responseText)
 
@@ -504,6 +524,9 @@ autoAddAllResources() {
 
       const timeMatch = responseText.match(/Temp\s*=\s*(\d+)/);
       this.time = timeMatch ? timeMatch[1] : null;
+
+      const timeMatchx = responseText.match(/TempFret\s*=\s*(\d+)/);
+      this.timef = timeMatchx ? timeMatchx[1] : null;
 
       const descriptionMatch = responseText.match(/Description\s*=\s*(.+)/);
       this.description = descriptionMatch ? descriptionMatch[1].trim() : null;

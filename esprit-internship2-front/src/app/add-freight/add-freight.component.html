@@ -294,24 +294,40 @@
                                 name="description" rows="3" placeholder="Enter a description here"></textarea>
                         </div>
 
+
+                        <div class="col-md-12">
+                            <button (click)="predict()" type="button"
+                                class="btn btn-primary">Rafraîchir la prédiction</button>
+                            </div>
+                    
+
                         <div *ngIf="quality || time" class="row results mt-3">
 
                             <!-- Quality Card -->
-                            <div class="col-md-6 mb-3" *ngIf="quality">
+                            <div class="col-md-4 mb-3" *ngIf="quality">
                                 <div class="card text-center text-white bg-primary">
                                     <div class="card-body">
-                                        <h5 class="card-title">🔍 Qualité de la route</h5> <!-- Emoji added -->
+                                        <h6 class="card-title">🔍 Qualité de la route</h6> <!-- Emoji added -->
                                         <p class="card-text">{{ quality }}</p>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Time Card -->
-                            <div class="col-md-6 mb-3" *ngIf="time">
+                            <div class="col-md-4 mb-3" *ngIf="time">
                                 <div class="card text-center text-white bg-primary">
                                     <div class="card-body">
-                                        <h5 class="card-title">⏱️ Durée approximative</h5> <!-- Emoji added -->
-                                        <p class="card-text">{{ time }} </p>
+                                        <h6 class="card-title">⏱️ Durée Voyage Approx</h6> <!-- Emoji added -->
+                                        <p class="card-text">{{ time }} h</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 mb-3" *ngIf="timef">
+                                <div class="card text-center text-white bg-primary">
+                                    <div class="card-body">
+                                        <h6 class="card-title">🏋️ Durée Prépa Approx</h6> <!-- Emoji added -->
+                                        <p class="card-text">{{ timef }} min</p>
                                     </div>
                                 </div>
                             </div>
@@ -351,7 +367,7 @@
                                 </div>
                             </div>
                         </div>
-
+                        <br>
                         <button type="submit" class="btn btn-primary">Confirmer</button>
                     </div>
                 </div>

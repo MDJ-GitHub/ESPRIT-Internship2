@@ -17,10 +17,12 @@ export class SidebarComponent {
   @Input() containerPage: boolean = false; 
   @Input() trainPage: boolean = false; 
   @Input() carPage: boolean = false; 
+  userName = ''
   
   constructor(private router: Router) {}
 
   ngAfterViewInit(): void {
+    this.getUserNameFromSession()
     const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     tooltipTriggerList.map((tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl));
   }
@@ -77,4 +79,48 @@ export class SidebarComponent {
     });
   }
 
+  popupFreightId: number | undefined;
+  popupPosition = { top: 0, left: 0 };
+  togglePopup(event: MouseEvent, freightId: number | undefined) {
+    event.stopPropagation();
+    if (freightId !== 0) {
+      this.popupFreightId = freightId;
+      this.popupPosition = {
+        top: event.clientY - 90,
+        left: event.clientX + 10
+      };
+    } else {
+      this.popupFreightId = 0;
+    }
+  }
+
+  getUserNameFromSession() {
+    // Retrieve the 'session' from localStorage
+    const sessionString = localStorage.getItem('session');
+    
+    // Check if the session exists
+    if (sessionString) {
+      try {
+        // Parse the session string into a JSON object
+        const sessionObject = JSON.parse(sessionString);
+  
+        // Extract the user.name from the session object
+        this.userName = sessionObject.name;
+  
+      } catch (error) {
+        console.error('Error parsing session JSON:', error);
+      }
+    } else {
+      console.warn('No session found in localStorage');
+    }
+  }
+
+  cancelPopup() {
+    this.popupFreightId = 0;
+  }
+
+  logout() {
+    localStorage.removeItem('session'); // Remove session data
+    this.router.navigate(['/home']); // Redirect to the login page
+  }
 }

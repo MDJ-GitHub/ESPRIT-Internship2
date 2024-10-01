@@ -217,7 +217,7 @@ export class ResourceComponent {
     } else {
 
       this.newResource.id = this.modifyid;
-      this.services.modifyCar(this.newResource).subscribe(
+      this.services.modifyResource(this.newResource).subscribe(
         (response) => {
           console.log('Resource modified successfully');
           this.retrieveAllResources()
