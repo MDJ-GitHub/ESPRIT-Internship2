@@ -257,18 +257,17 @@
                                             /
                                             {{ (resource.length ?? 0) * (resource.count ?? 0) }}x{{ (resource.width ??
                                             0) * (resource.count ?? 0) }}x{{ (resource.height ?? 0) * (resource.count ??
-                                            0) }} M
-
+                                            0) }} m
 
 
 
                                         </td>
                                         <td>{{ resource.weight }}/ {{ (resource.weight ?? 0) * (resource.count ?? 0) }}
-                                            Kg
+                                            kg
                                         </td>
                                         <td>{{ resource.stationStart }} -> {{ resource.stationArrive }}</td>
                                         <td>{{ resource.resourceType }}</td>
-                                        <td>{{ resource.cost}} TND</td>
+                                        <td>{{ resource.cost}} tnd</td>
                                         <td [ngClass]="{
                                     'bg-success text-white': resource.state === 0,
                                     'bg-info text-white': resource.state === 2,

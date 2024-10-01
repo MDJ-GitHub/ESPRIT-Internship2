@@ -17,6 +17,8 @@ export class FreightComponent {
   
   unfiltered: Freight[] = [];
 
+  details = false;
+  detailed: Freight = {}
 
   filter = {
     stationStart: '',
@@ -35,6 +37,11 @@ export class FreightComponent {
   ngOnInit(): void {
     this.retrieveAllFreights();
 
+  }
+
+  showDetails(freight: Freight){
+    this.detailed = freight;
+    this.details = true
   }
 
   applyFilter() {

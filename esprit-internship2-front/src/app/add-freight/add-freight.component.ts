@@ -142,24 +142,262 @@ export class AddFreightComponent {
   }
 
   addContainment() {
-    this.newContainment.containers = this.selectedContainers;
-    this.newContainment.resource = this.selectedResources[0];
+    // Calculate total volume of selected containers with safety checks for undefined values
+    let totalContainerVolume = this.selectedContainers.reduce((total, container) => {
+      const containerWidth = container.width || 0;
+      const containerHeight = container.height || 0;
+      const containerLength = container.length || 0;
+      return total + (containerWidth * containerHeight * containerLength);
+    }, 0);
 
-    this.containments.push(this.newContainment);
+    // Calculate total weight of selected containers and ensure weightLimit is defined
+    let totalContainerWeightLimit = this.selectedContainers.reduce((total, container) => {
+      const containerWeightLimit = container.weightLimit || 0;  // Assume weightLimit exists in each container
+      return total + containerWeightLimit;
+    }, 0);
 
-    this.containers = this.containers.filter(container =>
-      !this.selectedContainers.includes(container)
-    );
+    // Ensure resource properties are also defined
+    const resource = this.selectedResources[0];
+    const resourceWidth  = resource.width! * resource.count! || 0;
+    const resourceHeight = resource.height! * resource.count! || 0;
+    const resourceLength = resource.length! * resource.count!  || 0;
+    const resourceWeight = resource.weight! * resource.count! || 0;
+    // Calculate volume of the selected resource
+    const resourceVolume = resourceWidth * resourceHeight * resourceLength;
 
-    this.resources = this.resources.filter(resource =>
-      !this.selectedResources.includes(resource)
-    );
+    // Check if the total container volume is sufficient for the resource
+    if (totalContainerVolume >= resourceVolume) {
+      // Check if the total container weight limit is sufficient for the resource
+      if (totalContainerWeightLimit >= resourceWeight) {
+        this.newContainment.containers = this.selectedContainers;
+        this.newContainment.resource = this.selectedResources[0];
 
-    this.selectedContainers = [];
-    this.selectedResources = [];
+        this.containments.push(this.newContainment);
 
-    console.log(this.containments)
+        this.containers = this.containers.filter(container =>
+          !this.selectedContainers.includes(container)
+        );
+
+        this.resources = this.resources.filter(resource =>
+          !this.selectedResources.includes(resource)
+        );
+
+        this.selectedContainers = [];
+        this.selectedResources = [];
+
+        console.log(this.containments);
+      } else {
+        // Alert in French if the total weight limit is insufficient
+        alert("Poids insuffisant pour stocker la ressource.");
+      }
+    } else {
+      // Alert in French if the total volume is insufficient
+      alert("Espace insuffisant pour stocker la ressource.");
+    }
   }
+
+  autoAddResource() {
+    if (this.selectedResources.length == 0) {
+        alert("Selectionner une ressource.");
+        return;
+    }
+
+    const resource = this.selectedResources[0];
+    const resourceWidth  = resource.width! * resource.count! || 0;
+    const resourceHeight = resource.height! * resource.count! || 0;
+    const resourceLength = resource.length! * resource.count!  || 0;
+    const resourceWeight = resource.weight! * resource.count! || 0;
+
+    const totalVolume = resourceHeight * resourceLength * resourceWidth;
+    const totalWeight = resourceWeight;
+
+    // Sort containers by width, height, length, and weight (smallest to largest)
+    this.containers.sort((a, b) => {
+        const volumeA = (a.width || 0) * (a.height || 0) * (a.length || 0);
+        const volumeB = (b.width || 0) * (b.height || 0) * (b.length || 0);
+        if (volumeA === volumeB) {
+            return (a.weightLimit || 0) - (b.weightLimit || 0); // If volume is the same, sort by weight
+        }
+        return volumeA - volumeB; // Sort by volume
+    });
+
+    // Check each container's dimensions and weight for single container solution
+    for (let i = 0; i < this.containers.length; i++) {
+        let container = this.containers[i];
+        let containerWidth = container.width || 0;
+        let containerHeight = container.height || 0;
+        let containerLength = container.length || 0;
+        let containerVolume = containerWidth * containerHeight * containerLength;
+        let containerWeight = container.weightLimit || 0;
+
+        // Case 1: Single container can contain the resource
+        if (containerVolume >= totalVolume && containerWeight >= totalWeight) {
+            this.newContainment.containers = [container];
+            this.newContainment.resource = resource;
+            this.containments.push(this.newContainment);
+
+            this.containers = this.containers.filter(c => c.id !== container.id);
+            this.resources = this.resources.filter(r => !this.selectedResources.includes(r));
+
+            return;
+        }
+    }
+
+    // Case 2: Check combinations of containers
+    for (let combinationSize = 2; combinationSize <= this.containers.length; combinationSize++) {
+        let combinations = this.getCombinations(this.containers, combinationSize);
+
+        for (let combination of combinations) {
+            let accumulatedVolume = 0;
+            let accumulatedWeight = 0;
+
+            for (let container of combination) {
+                let containerWidth = container.width || 0;
+                let containerHeight = container.height || 0;
+                let containerLength = container.length || 0;
+                let containerWeight = container.weightLimit || 0;
+
+                accumulatedVolume += containerHeight * containerLength * containerWidth;
+                accumulatedWeight += containerWeight;
+            }
+
+            if (accumulatedVolume >= totalVolume && accumulatedWeight >= totalWeight) {
+                this.newContainment.containers = combination;
+                this.newContainment.resource = resource;
+                this.containments.push(this.newContainment);
+
+                this.containers = this.containers.filter(container => !combination.includes(container));
+                this.resources = this.resources.filter(r => !this.selectedResources.includes(r));
+
+                return;
+            }
+        }
+    }
+
+    // If no combination of containers can fit the resource
+    alert('Ne peut pas contenir la ressource.');
+}
+
+// Helper function to get all combinations of size 'combinationSize'
+getCombinations(containers: string | any[], combinationSize: number) {
+    let result: any[][] = [];
+    let recurse = function (start: number, currentCombo: any[]) {
+        if (currentCombo.length === combinationSize) {
+            result.push([...currentCombo]);
+            return;
+        }
+
+        for (let i = start; i < containers.length; i++) {
+            currentCombo.push(containers[i]);
+            recurse(i + 1, currentCombo);
+            currentCombo.pop();
+        }
+    };
+    recurse(0, []);
+    return result;
+}
+
+
+
+autoAddAllResources() {
+  if (this.resources.length == 0) {
+      alert("Aucune ressource disponible.");
+      return;
+  }
+
+  // Sort containers by width, height, length, and weight (smallest to largest)
+  this.containers.sort((a, b) => {
+      const volumeA = (a.width || 0) * (a.height || 0) * (a.length || 0);
+      const volumeB = (b.width || 0) * (b.height || 0) * (b.length || 0);
+      if (volumeA === volumeB) {
+          return (a.weightLimit || 0) - (b.weightLimit || 0); // Sort by weight if volumes are equal
+      }
+      return volumeA - volumeB; // Sort by volume
+  });
+
+  // Loop through all available resources
+  for (let resource of this.resources) {
+      let resourceWidth = (resource.width || 0) * (resource.count || 1);
+      let resourceHeight = (resource.height || 0) * (resource.count || 1);
+      let resourceLength = (resource.length || 0) * (resource.count || 1);
+      let resourceWeight = (resource.weight || 0) * (resource.count || 1);
+
+      let totalVolume = resourceHeight * resourceLength * resourceWidth;
+      let totalWeight = resourceWeight;
+
+      // Track if the resource has been contained
+      let resourceContained = false;
+
+      // Case 1: Check single container
+      for (let i = 0; i < this.containers.length; i++) {
+          let container = this.containers[i];
+          let containerWidth = container.width || 0;
+          let containerHeight = container.height || 0;
+          let containerLength = container.length || 0;
+          let containerVolume = containerWidth * containerHeight * containerLength;
+          let containerWeight = container.weightLimit || 0;
+
+          if (containerVolume >= totalVolume && containerWeight >= totalWeight) {
+              this.newContainment.containers = [container];
+              this.newContainment.resource = resource;
+              this.containments.push(this.newContainment);
+
+              // Remove the used container and resource
+              this.containers = this.containers.filter(c => c.id !== container.id);
+              this.resources = this.resources.filter(r => r !== resource);
+              resourceContained = true;
+              break;
+          }
+      }
+
+      // Case 2: Check combinations of multiple containers
+      if (!resourceContained) {
+          for (let combinationSize = 2; combinationSize <= this.containers.length; combinationSize++) {
+              let combinations = this.getCombinations(this.containers, combinationSize);
+
+              for (let combination of combinations) {
+                  let accumulatedVolume = 0;
+                  let accumulatedWeight = 0;
+
+                  for (let container of combination) {
+                      let containerWidth = container.width || 0;
+                      let containerHeight = container.height || 0;
+                      let containerLength = container.length || 0;
+                      let containerWeight = container.weightLimit || 0;
+
+                      accumulatedVolume += containerHeight * containerLength * containerWidth;
+                      accumulatedWeight += containerWeight;
+                  }
+
+                  if (accumulatedVolume >= totalVolume && accumulatedWeight >= totalWeight) {
+                      this.newContainment.containers = [...combination];
+                      this.newContainment.resource = resource;
+                      this.containments.push(this.newContainment);
+
+                      // Remove the used containers and resource
+                      this.containers = this.containers.filter(c => !combination.includes(c));
+                      this.resources = this.resources.filter(r => r !== resource);
+
+                      resourceContained = true;
+                      break;
+                  }
+              }
+
+              if (resourceContained) {
+                  break;
+              }
+          }
+      }
+
+      // If no container or combination of containers is found for the current resource
+      if (!resourceContained) {
+          alert(`Ne peut pas contenir la ressource: ${resource.title || 'inconnue'}`);
+      }
+  }
+
+  console.log(this.containments);
+}
+
 
 
   retrieveResourcesByStation() {
@@ -206,9 +444,16 @@ export class AddFreightComponent {
     var dateTime = `${this.freight.trainDate}T${this.freight.trainTime}:00`;
     this.newFreight.launchDate = dateTime;
 
+
     var dateTimeStr = `${this.freight.trainDate}T${this.freight.trainTime}:00`;
     var dateTimee = new Date(dateTimeStr);
-    var hoursToAdd = parseInt(this.time as string, 10); 
+
+    if (this.time != null) {
+    var hoursToAdd = parseInt(this.time as string, 10);
+  } else {
+    var hoursToAdd = 2;
+  }
+    
     dateTimee.setHours(dateTimee.getHours() + hoursToAdd + 1);
     var updatedDateTime = dateTimee.toISOString().slice(0, 19);
     this.newFreight.arrivalDate = updatedDateTime
@@ -255,7 +500,7 @@ export class AddFreightComponent {
       console.log(responseText)
 
       const qualityMatch = responseText.match(/Qualité\s*=\s*(\S+)/);
-      this.quality = qualityMatch ? qualityMatch[1] : null; 
+      this.quality = qualityMatch ? qualityMatch[1] : null;
 
       const timeMatch = responseText.match(/Temp\s*=\s*(\d+)/);
       this.time = timeMatch ? timeMatch[1] : null;

@@ -89,10 +89,6 @@ export class TrainComponent {
       if (this.filter.axe !== null && this.filter.axe !== '') {
         matches = matches && resource.trainAxe === this.filter.axe;
       }
-      // State filter
-      if (this.filter.state !== null && this.filter.state !== '') {
-        matches = matches && resource.state === parseInt(this.filter.state, 10);
-      }
 
       return matches;
     });
@@ -200,7 +196,7 @@ export class TrainComponent {
           alert('Error modifying Train: ' + error);
       }
     )
-    this.services.addCarPopup();
+    this.services.addTrainPopup();
   }
 
   }
@@ -240,7 +236,7 @@ export class TrainComponent {
 
   modifyF(oldTrain: Train) {
 
-    if(oldTrain.state == 0 ) {
+    if(oldTrain.state == 0 || oldTrain.state == 5) {
     this.modify = true;
     this.modifyid = oldTrain.id as unknown as number;
 
@@ -268,7 +264,7 @@ export class TrainComponent {
       this.train.energyLimit = null;
     }
 
-    this.train.station = oldTrain.state as unknown as Station;
+    this.train.station = oldTrain.station as unknown as Station;
 
     this.train.trainAxe = oldTrain.trainAxe as unknown as TrainAxe;
 

@@ -1,16 +1,100 @@
 <app-navbar [addFreightButton]="true"></app-navbar>
 <div style="display: flex; height: 100vh;">
 
-    <!-- Sidebar -->
-    <app-sidebar [freightPage]="true"></app-sidebar>
+  <!-- Sidebar -->
+  <app-sidebar [freightPage]="true"></app-sidebar>
 
-    <!-- Main Content -->
-  
-<div style="flex: 1; position: relative; display: flex;">
+  <!-- Main Content -->
+
+  <div class="popup-overlay" *ngIf="details">
+    <div class="popup-content">
+      <h6>Description :</h6>
+      {{detailed.description}}
+      <h6>Ressources :</h6>
+      <div class="col-md-4" *ngFor="let containment of detailed.containments; let i = index" style="min-height: 50px;">
+        <div
+          style="border: 1px solid lightgray; border-radius: 8px; padding: 10px; margin-bottom: 5px; display: flex; align-items: center; cursor: pointer;">
+
+          <div style="display: flex; align-items: center;">
+            <img [src]="containment.resource?.photo || 'https://via.placeholder.com/50'" alt="Image" [ngStyle]="{
+                                                        'transform': activeZoomIndex === containment.resource?.id ? 'scale(5) translateX(20px)' : 'scale(1)', 
+                                                        'transition': 'transform 0.2s ease-in-out'
+                                                    }" style="width: 50px; object-fit: cover;"
+              (mouseover)="activeZoomIndex = containment.resource?.id" (mouseup)="activeZoomIndex = -1"
+              (mouseleave)="activeZoomIndex = -1">
+            <span>&nbsp; {{ containment.resource?.title }} <br>
+              &nbsp; {{ containment.resource?.owner?.lastName }}
+              {{containment.resource?.owner?.firstName }} <br>
+              &nbsp; {{(containment.resource?.length ?? 0) * (containment.resource?.count ??
+              0)}}x{{(containment.resource?.width ?? 0) * (containment.resource?.count ??
+              0)}}x{{(containment.resource?.height ?? 0) * (containment.resource?.count ?? 0) }} m
+
+              <br>
+              &nbsp; ({{(containment.resource?.length ?? 0) * (containment.resource?.count ?? 0) *
+              (containment.resource?.width ?? 0) * (containment.resource?.count ?? 0) * (containment.resource?.height
+              ?? 0) * (containment.resource?.count ?? 0) }} m3)
+              <br>
+              &nbsp; {{ (containment.resource?.weight ?? 0) * (containment.resource?.count ?? 0) }}
+              kg</span>
+
+
+
+
+          </div>
+        </div>
+      </div>
+
+      <h6>Conteneurs :</h6>
+
+      <div *ngFor="let x of detailed.containments; let i = index" style="min-height: 50px;">
+        Pour Resource : {{x.resource?.title}}
+        <div class="col-md-4" *ngFor="let container of x.containers; let i = index" style="min-height: 50px;">
+          <div
+            style="border: 1px solid lightgray; border-radius: 8px; padding: 10px; margin-bottom: 5px; display: flex; align-items: center; cursor: pointer;">
+
+            <div style="display: flex; align-items: center;">
+              <img [src]="container.photo || 'https://via.placeholder.com/50'" alt="Image" [ngStyle]="{
+                  'transform': activeZoomIndex === container.id ? 'scale(5) translateX(20px)' : 'scale(1)', 
+                  'transition': 'transform 0.2s ease-in-out'
+              }" style="width: 50px; object-fit: cover;" (mouseover)="activeZoomIndex = container.id"
+                (mouseup)="activeZoomIndex = -1" (mouseleave)="activeZoomIndex = -1">
+              <span>&nbsp; {{ container.title }} <br>
+                &nbsp; {{ container.length }}x{{ container.width }}x{{
+                container.height }} m <br>
+                &nbsp; ({{(container.length ?? 0) *
+                (container.width ?? 0) * (container.height
+                ?? 0) }} m3)
+
+                <br>&nbsp; {{ container.weightLimit }} kg</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <hr class="mt-4" />
+      <div class="row">
+        <div class="col-md-6">
+          <h5>Details de Freight no : {{detailed.id}} </h5>
+        </div>
+        <div class="col-md-6 text-end">
+          <button type="button" class="btn btn-secondary me-2" (click)="details = false">Annuler</button>
+        </div>
+      </div>
+    </div>
+
+
+
+  </div>
+
+
+
+
+  <div style="flex: 1; position: relative; display: flex;">
 
     <div
-        style="flex: 1; display: flex; justify-content: center; align-items: center; text-align: center; position: relative;">
-        <div style="
+      style="flex: 1; display: flex; justify-content: center; align-items: center; text-align: center; position: relative;">
+      <div style="
                 position: absolute;
                 top: 0;
                 left: 0;
@@ -23,67 +107,63 @@
                 opacity: 0.2;
             "></div>
 
-        <div style="flex: 1; display: flex;">
-            <!-- Table Section -->
-            <div style="flex: 5; position: relative; padding: 12px; padding-right: 0px; z-index: 1;">
-                <div style="height: 480px; overflow-y: auto; overflow-x: hidden; margin-top: 20px;">
-                  <div id="pdf-content">  
-                  <table class="table table-bordered table-striped table-hover shadow" style="width: 100%;">
-                        <thead class="thead-dark" style="position: sticky; top: 0">
-                          <tr>
-                            <th>Image</th>
-                            <th>Id</th>
-                            <th>Date Départ</th>
-                            <th>Date Arrivee</th>
-                            <th>D. Arr Actuel </th>
-                            <th>Station Départ</th>
-                            <th>Station Arrival</th>
-                            <th>Nbr Res.</th>
-                            <th>Statut</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr *ngFor="let freight of freights" (click)="togglePopup($event, freight.id)">
-                            <td>
-                              <div>
-                                <img [src]="freight.train?.photo || 'https://via.placeholder.com/50'" alt="Image"
-                                     [ngStyle]="{
+      <div style="flex: 1; display: flex;">
+        <!-- Table Section -->
+        <div style="flex: 5; position: relative; padding: 12px; padding-right: 0px; z-index: 1;">
+          <div style="height: 480px; overflow-y: auto; overflow-x: hidden; margin-top: 20px;">
+            <div id="pdf-content">
+              <table class="table table-bordered table-striped table-hover shadow" style="width: 100%;">
+                <thead class="thead-dark" style="position: sticky; top: 0">
+                  <tr>
+                    <th>Image</th>
+                    <th>Id</th>
+                    <th>Date Départ</th>
+                    <th>Date Arrivee</th>
+                    <th>D. Arr Actuel </th>
+                    <th>Station Départ</th>
+                    <th>Station Arrival</th>
+                    <th>Nbr Res.</th>
+                    <th>Statut</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let freight of freights" (click)="togglePopup($event, freight.id)">
+                    <td>
+                      <div>
+                        <img [src]="freight.train?.photo || 'https://via.placeholder.com/50'" alt="Image" [ngStyle]="{
                                        'transform': activeZoomIndex === freight.id ? 'scale(5) translateX(20px)' : 'scale(1)', 
                                        'transition': 'transform 0.2s ease-in-out'
                                      }" style="width: 50px; object-fit: cover;"
-                                     (mouseover)="activeZoomIndex = freight.id" (mouseup)="activeZoomIndex = -1"
-                                     (mouseleave)="activeZoomIndex = -1">
-                              </div>
-                            </td>
-                            <td>{{freight.id}}</td>
-                            <td>{{ freight.launchDate | date: 'yyyy-MM-dd HH:mm' }}</td>
-                            <td>{{ freight.arrivalDate | date: 'yyyy-MM-dd HH:mm' }}</td>
-                            <td>{{ freight.actarrivalDate | date: 'yyyy-MM-dd HH:mm' }}</td>                            
-                            <td>{{freight.stationStart}}</td>
-                            <td>{{freight.stationArrive}}</td>
-                            <td>{{freight.containments?.length}}</td>
-                            
-                            <td [ngClass]="{
+                          (mouseover)="activeZoomIndex = freight.id" (mouseup)="activeZoomIndex = -1"
+                          (mouseleave)="activeZoomIndex = -1">
+                      </div>
+                    </td>
+                    <td>{{freight.id}}</td>
+                    <td>{{ freight.launchDate | date: 'yyyy-MM-dd HH:mm' }}</td>
+                    <td>{{ freight.arrivalDate | date: 'yyyy-MM-dd HH:mm' }}</td>
+                    <td>{{ freight.actarrivalDate | date: 'yyyy-MM-dd HH:mm' }}</td>
+                    <td>{{freight.stationStart}}</td>
+                    <td>{{freight.stationArrive}}</td>
+                    <td>{{freight.containments?.length}}</td>
+
+                    <td [ngClass]="{
                                 'bg-success text-white': freight.state === 2,
                                 'bg-info text-white': freight.state === 0,
                                 'bg-primary text-white': freight.state === 3,
                                 'bg-secondary text-white': freight.state === 5,
                                 'bg-danger text-white': freight.state === 4
-                              }"
-                              
-                              
-                              >
-                                    <ng-container *ngIf="freight.state === 2">Disponible</ng-container>
-                                    <ng-container *ngIf="freight.state === 0">Programmé</ng-container>
-                                    <ng-container *ngIf="freight.state === 3">En route</ng-container>
-                                    <ng-container *ngIf="freight.state === 5">Livré</ng-container>
-                                    <ng-container *ngIf="freight.state === 4">Non Disponible</ng-container>
-                                </td>
+                              }">
+                      <ng-container *ngIf="freight.state === 2">Disponible</ng-container>
+                      <ng-container *ngIf="freight.state === 0">Programmé</ng-container>
+                      <ng-container *ngIf="freight.state === 3">En route</ng-container>
+                      <ng-container *ngIf="freight.state === 5">Livré</ng-container>
+                      <ng-container *ngIf="freight.state === 4">Non Disponible</ng-container>
+                    </td>
 
-                      
-                            <!-- Popup options -->
-                         
-                              <div *ngIf="popupFreightId === freight.id" [ngStyle]="{
+
+                    <!-- Popup options -->
+
+                    <div *ngIf="popupFreightId === freight.id" [ngStyle]="{
                                     'position': 'absolute', 
                                     'background': 'white', 
                                     'border': '1px solid #ccc', 
@@ -94,108 +174,121 @@
                                     'top': popupPosition.top + 'px',
                                     'left': popupPosition.left + 'px'
                                   }" (click)="$event.stopPropagation()">
-                                <ul style="list-style-type: none; padding: 0; margin: 0;">
-                                    <ng-container *ngIf="freight.state === 0">   <li style="margin-bottom: 5px; cursor: pointer;" (click)="launchFreight(freight.id)">🚀 Lancer</li></ng-container>
-                                    <ng-container *ngIf="freight.state === 3">   <li style="margin-bottom: 5px; cursor: pointer;" (click)="arriveFreight(freight.id)">🚩 Arriver</li></ng-container>
-                                      <li style="margin-bottom: 5px; cursor: pointer;" (click)="deleteFreight(freight.id)">🗑️ Supprimer</li>
-                                  <li style="cursor: pointer;" (click)="$event.stopPropagation(); cancelPopup()">❌ Annuler</li>
-                                </ul>
-                              </div>
-                          
-                          </tr>
-                        </tbody>
-                      </table>
-                      
-                    
+                      <ul style="list-style-type: none; padding: 0; margin: 0;">
+                        <ng-container *ngIf="freight.state === 0">
+                          <li style="margin-bottom: 5px; cursor: pointer;" (click)="launchFreight(freight.id)">🚀 Lancer
+                          </li>
+                        </ng-container>
+                        <ng-container *ngIf="freight.state === 3">
+                          <li style="margin-bottom: 5px; cursor: pointer;" (click)="arriveFreight(freight.id)">🚩
+                            Arriver
+                          </li>
+                        </ng-container>
+                        <li style="margin-bottom: 5px; cursor: pointer;" (click)="deleteFreight(freight.id)">🗑️
+                          Supprimer
+                        </li>
+                        <li style="margin-bottom: 5px; cursor: pointer;" (click)="showDetails(freight)">📄 Details
+                        </li>
+                        <li style="cursor: pointer;" (click)="$event.stopPropagation(); cancelPopup()">❌ Annuler</li>
+                      </ul>
                     </div>
-                </div>
+
+                  </tr>
+                </tbody>
+              </table>
+
+
             </div>
-
-            <!-- Filter Card Section -->
-            <div style="flex: 1; padding: 10px; z-index: 1; padding-top: 31px;">
-                <!-- Adjusted padding above the card -->
-                <div class="card shadow rounded" style="width: 140px; padding: 16px; padding-top: 5px;">
-                    <div class="form-group">
-                        <label for="filterStationStart">Station D</label>
-                                <select id="filterStationStart" class="form-select"
-                                    name="filterStationStart" [(ngModel)]="filter.stationStart">
-                                    <option value="" >Tout</option>
-                                    <option value="Tunis">Tunis</option>
-                                    <option value="Sousse">Sousse</option>
-                                    <option value="Sfax">Sfax</option>
-                                    <option value="Gabes">Gabes</option>
-                                    <option value="Gafsa">Gafsa</option>
-                                    <option value="LaGoulette">LaGoulette</option>
-                                    <option value="Gaafour">Gaafour</option>
-                                    <option value="Djerissa">Djerissa</option>
-                                    <option value="Kasserine">Kasserine</option>
-                                    <option value="Beja">Beja</option>
-                                    <option value="Ghardimaou">Ghardimaou</option>
-                                    <option value="Bizerte">Bizerte</option>
-                                </select> </div>
-                    <div class="form-group">
-                        <label for="filterStationArrive">Station A</label>
-                        <select id="filterStationArrive" class="form-select"
-                        name="filterStationArrive" [(ngModel)]="filter.stationArrive">
-                        <option value="" >Tout</option>
-                        <option value="Tunis">Tunis</option>
-                        <option value="Sousse">Sousse</option>
-                        <option value="Sfax">Sfax</option>
-                        <option value="Gabes">Gabes</option>
-                        <option value="Gafsa">Gafsa</option>
-                        <option value="LaGoulette">LaGoulette</option>
-                        <option value="Gaafour">Gaafour</option>
-                        <option value="Djerissa">Djerissa</option>
-                        <option value="Kasserine">Kasserine</option>
-                        <option value="Beja">Beja</option>
-                        <option value="Ghardimaou">Ghardimaou</option>
-                        <option value="Bizerte">Bizerte</option>
-                    </select> </div>
-
-                    <div class="form-group">
-                      <label for="filterLaunchDate">Date D</label>
-                      <input type="date" id="filterLaunchDate" class="form-control"
-                          [(ngModel)]="filter.launchDate" name="filterLaunchDate"/>
-               </div>
-
-               <div class="form-group">
-                <label for="filterArriveDate">Date A</label>
-                <input type="date" id="filterArriveDate" class="form-control"
-                    [(ngModel)]="filter.arriveDate" name="filterArriveDate"/>
-         </div>
-
-         <div class="form-group">
-          <label for="filterActArriveDate">Date Act A</label>
-          <input type="date" id="filterActArriveDate" class="form-control"
-              [(ngModel)]="filter.actarriveDate" name="filterActArriveDate"/>
-   </div>
-
-
-                    <div class="form-group">
-                      <label for="filterStationStart">Statut</label>
-                              <select id="filterStationStart" class="form-select"
-                                  name="filterStationStart" [(ngModel)]="filter.state">
-                                  <option value="">Tout</option>
-                                  <option value="0">Disponible</option>
-                                  <option value="2">Programmé</option>
-                                  <option value="3">En route</option>
-                                  <option value="5">Livré</option>
-                                  <option value="4">Non Disponible</option>
-                              </select> </div>
-                  <div>
-                      <input type="radio" id="inferior" name="comparison" value="inferior" [(ngModel)]="filter.comparison">
-                      <label for="inferior">Inférieur</label>
-                      <br>
-                      <input type="radio" id="superior" name="comparison" value="superior" [(ngModel)]="filter.comparison">
-                      <label for="superior">Supérieur</label>
-                  </div>
-                  <button type="button" class="btn btn-primary mt-1" (click)="applyFilter()">Filtrer</button>
-             
-                </div>
-            </div>
+          </div>
         </div>
+
+        <!-- Filter Card Section -->
+        <div style="flex: 1; padding: 10px; z-index: 1; padding-top: 31px;">
+          <!-- Adjusted padding above the card -->
+          <div class="card shadow rounded" style="width: 140px; padding: 16px; padding-top: 5px;">
+            <div class="form-group">
+              <label for="filterStationStart">Station D</label>
+              <select id="filterStationStart" class="form-select" name="filterStationStart"
+                [(ngModel)]="filter.stationStart">
+                <option value="">Tout</option>
+                <option value="Tunis">Tunis</option>
+                <option value="Sousse">Sousse</option>
+                <option value="Sfax">Sfax</option>
+                <option value="Gabes">Gabes</option>
+                <option value="Gafsa">Gafsa</option>
+                <option value="LaGoulette">LaGoulette</option>
+                <option value="Gaafour">Gaafour</option>
+                <option value="Djerissa">Djerissa</option>
+                <option value="Kasserine">Kasserine</option>
+                <option value="Beja">Beja</option>
+                <option value="Ghardimaou">Ghardimaou</option>
+                <option value="Bizerte">Bizerte</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="filterStationArrive">Station A</label>
+              <select id="filterStationArrive" class="form-select" name="filterStationArrive"
+                [(ngModel)]="filter.stationArrive">
+                <option value="">Tout</option>
+                <option value="Tunis">Tunis</option>
+                <option value="Sousse">Sousse</option>
+                <option value="Sfax">Sfax</option>
+                <option value="Gabes">Gabes</option>
+                <option value="Gafsa">Gafsa</option>
+                <option value="LaGoulette">LaGoulette</option>
+                <option value="Gaafour">Gaafour</option>
+                <option value="Djerissa">Djerissa</option>
+                <option value="Kasserine">Kasserine</option>
+                <option value="Beja">Beja</option>
+                <option value="Ghardimaou">Ghardimaou</option>
+                <option value="Bizerte">Bizerte</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="filterLaunchDate">Date D</label>
+              <input type="date" id="filterLaunchDate" class="form-control" [(ngModel)]="filter.launchDate"
+                name="filterLaunchDate" />
+            </div>
+
+            <div class="form-group">
+              <label for="filterArriveDate">Date A</label>
+              <input type="date" id="filterArriveDate" class="form-control" [(ngModel)]="filter.arriveDate"
+                name="filterArriveDate" />
+            </div>
+
+            <div class="form-group">
+              <label for="filterActArriveDate">Date Act A</label>
+              <input type="date" id="filterActArriveDate" class="form-control" [(ngModel)]="filter.actarriveDate"
+                name="filterActArriveDate" />
+            </div>
+
+
+            <div class="form-group">
+              <label for="filterStationStart">Statut</label>
+              <select id="filterStationStart" class="form-select" name="filterStationStart" [(ngModel)]="filter.state">
+                <option value="">Tout</option>
+                <option value="0">Disponible</option>
+                <option value="2">Programmé</option>
+                <option value="3">En route</option>
+                <option value="5">Livré</option>
+                <option value="4">Non Disponible</option>
+              </select>
+            </div>
+            <div>
+              <input type="radio" id="inferior" name="comparison" value="inferior" [(ngModel)]="filter.comparison">
+              <label for="inferior">Inférieur</label>
+              <br>
+              <input type="radio" id="superior" name="comparison" value="superior" [(ngModel)]="filter.comparison">
+              <label for="superior">Supérieur</label>
+            </div>
+            <button type="button" class="btn btn-primary mt-1" (click)="applyFilter()">Filtrer</button>
+
+          </div>
+        </div>
+      </div>
 
     </div>
 
-</div>
+  </div>
 </div>
