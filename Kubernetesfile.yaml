@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
       - name: esprit-internship2-db
-        image: mysql:latest
+        image: mysql
         ports:
         - containerPort: 3306
           name: cport-3306
