@@ -41,7 +41,7 @@ metadata:
     app: label-esprit-internship2-cser-db
 spec:
   selector:
-    app: label-esprit-internship2-cdep-db
+    app: label-esprit-internship2-dep-db
   ports:
   - port: 3306
     name: port-3306
