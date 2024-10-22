@@ -52,7 +52,7 @@ metadata:
     app: label-esprit-internship2-nser-back
 spec:
   selector:
-    app: label-esprit-internship2-dep-back
+    app: label-esprit-internship2-dep-db-back
   ports:
   - port: 9000
     name: port-9000
