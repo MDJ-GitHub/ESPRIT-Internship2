@@ -1,5 +1,45 @@
 # Esprit Internship 2 Kubernetesfile
 
+---
+
+#  Database PersistentVolume
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: esprit-internship2-pv-db
+  labels:
+    app: label-esprit-internship2-pv-db
+spec:
+  capacity:
+    storage: 5Gi 
+  accessModes:
+    - ReadWriteOnce 
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: esprit-internship2-scn-db
+  hostPath:
+    path: /mnt/data/esprit-internship2-db
+
+---
+
+# Database PersistentVolumeClaim
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: esprit-internship2-pvc-db
+  labels:
+    app: label-esprit-internship2-pvc-db
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: esprit-internship2-scn-db
+
+---
+
 # Backend + Database Deployment
 
 apiVersion: apps/v1
@@ -9,7 +49,7 @@ metadata:
   labels:
     app: label-esprit-internship2-dep-db-back
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: label-esprit-internship2-dep-db-back
@@ -27,6 +67,10 @@ spec:
         ports:
         - containerPort: 3306
           name: cport-3306
+        volumeMounts:
+        - name: esprit-internship2-vol-db
+          mountPath: /var/lib/mysql
+
       - name: esprit-internship2-dep-back
         image: mdjdocker/esprit-internship2-back:latest
         ports:
@@ -38,11 +82,17 @@ spec:
           initialDelaySeconds: 5
           periodSeconds: 20
           failureThreshold: 3
+
       restartPolicy: Always
+
+      volumes:
+      - name: esprit-internship2-vol-db
+        persistentVolumeClaim:
+          claimName: esprit-internship2-pvc-db
 
 ---
 
-# Backend Service NodePort
+# Backend NodePort Service
 
 apiVersion: v1
 kind: Service
@@ -59,7 +109,7 @@ spec:
     targetPort: 9000
     nodePort: 30001
   type: NodePort
-  
+
 ---
 
 # Frontend Deployment
@@ -87,10 +137,10 @@ spec:
         - containerPort: 80
           name: cport-80
       restartPolicy: Always
-    
+
 ---
 
-# Frontend Service NodePort
+# Frontend NodePort Service
 
 apiVersion: v1
 kind: Service
@@ -107,4 +157,5 @@ spec:
     targetPort: 80
     nodePort: 30002
   type: NodePort
-  
+
+---
