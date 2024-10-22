@@ -49,7 +49,7 @@ metadata:
   labels:
     app: label-esprit-internship2-dep-db-back
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: label-esprit-internship2-dep-db-back
