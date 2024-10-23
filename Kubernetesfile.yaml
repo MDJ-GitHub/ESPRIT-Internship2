@@ -1,35 +1,35 @@
 # Esprit Internship 2 Kubernetesfile
 
-# Persistent Volume for MySQL
+# Database Persistent Volume
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: esprit-internship2-pv
+  name: esprit-internship2-pv-db
   labels:
-    app: label-esprit-internship2-pv
+    app: label-esprit-internship2-pv-db
 spec:
   capacity:
-    storage: 1Gi
+    storage: 5Gi
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: /mnt/data/esprit-internship2/mysql
+    path: /mnt/data/esprit-internship2-db/mysql
 
 ---
 
-# Persistent Volume Claim for MySQL
+# Database Persistent Volume Claim
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: esprit-internship2-pvc
+  name: esprit-internship2-pvc-db
   labels:
-    app: label-esprit-internship2-pvc
+    app: label-esprit-internship2-pvc-db
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 1Gi
+      storage: 5Gi
 
 ---
 
@@ -84,7 +84,7 @@ spec:
       volumes:
       - name: esprit-internship2-vol-db
         persistentVolumeClaim:
-          claimName: esprit-internship2-pvc
+          claimName: esprit-internship2-pvc-db
 
 ---
 
