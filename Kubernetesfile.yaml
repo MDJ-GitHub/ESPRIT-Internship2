@@ -1,47 +1,39 @@
 # Esprit Internship 2 Kubernetesfile
 
----
-
-#  Database PersistentVolume
-
+# Persistent Volume for MySQL
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: esprit-internship2-pv-db
+  name: esprit-internship2-pv
   labels:
-    app: label-esprit-internship2-pv-db
+    app: label-esprit-internship2-pv
 spec:
   capacity:
-    storage: 5Gi
+    storage: 1Gi
   accessModes:
     - ReadWriteOnce
-  persistentVolumeReclaimPolicy: Retain
-  storageClassName: esprit-internship2-scn-db
   hostPath:
-    path: /mnt/data/esprit-internship2-db
+    path: /mnt/data/esprit-internship2/mysql
 
 ---
 
-# Database PersistentVolumeClaim
-
+# Persistent Volume Claim for MySQL
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: esprit-internship2-pvc-db
+  name: esprit-internship2-pvc
   labels:
-    app: label-esprit-internship2-pvc-db
+    app: label-esprit-internship2-pvc
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 5Gi
-  storageClassName: esprit-internship2-scn-db
+      storage: 1Gi
 
 ---
 
 # Backend + Database Deployment
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -58,6 +50,13 @@ spec:
       labels:
         app: label-esprit-internship2-dep-db-back
     spec:
+      initContainers:
+      - name: init-permissions
+        image: busybox
+        command: ['sh', '-c', 'chown -R 999:999 /var/lib/mysql']
+        volumeMounts:
+        - name: esprit-internship2-vol-db
+          mountPath: /var/lib/mysql
       containers:
       - name: esprit-internship2-dep-db
         image: mysql
@@ -70,7 +69,6 @@ spec:
         volumeMounts:
         - name: esprit-internship2-vol-db
           mountPath: /var/lib/mysql
-
       - name: esprit-internship2-dep-back
         image: mdjdocker/esprit-internship2-back:latest
         ports:
@@ -82,18 +80,15 @@ spec:
           initialDelaySeconds: 5
           periodSeconds: 20
           failureThreshold: 3
-
       restartPolicy: Always
-
       volumes:
       - name: esprit-internship2-vol-db
         persistentVolumeClaim:
-          claimName: esprit-internship2-pvc-db
+          claimName: esprit-internship2-pvc
 
 ---
 
-# Backend NodePort Service
-
+# Backend Service NodePort
 apiVersion: v1
 kind: Service
 metadata:
@@ -113,7 +108,6 @@ spec:
 ---
 
 # Frontend Deployment
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -140,8 +134,7 @@ spec:
 
 ---
 
-# Frontend NodePort Service
-
+# Frontend Service NodePort
 apiVersion: v1
 kind: Service
 metadata:
@@ -157,5 +150,3 @@ spec:
     targetPort: 80
     nodePort: 30002
   type: NodePort
-
----
