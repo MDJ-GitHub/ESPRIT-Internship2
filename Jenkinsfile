@@ -1,67 +1,105 @@
 pipeline {
     agent any
-
     environment {
-        DOCKER_HUB_CREDENTIALS = 'dockerCreds'
-        KUBECONFIG = 'C:\\Users\\MDJMi\\.kube\\config'
-		DOCKER_IMAGE_FRONT = 'mdjdocker/esprit-internship2-front:latest' // KUBECTL DOES NOT USE VAIRABLES, CHANGE IT MANUALLY THERE.
-        DOCKER_IMAGE_BACK = 'mdjdocker/esprit-internship2-back:latest' // KUBECTL DOES NOT USE VAIRABLES, CHANGE IT MANUALLY THERE.
-		GITHUB_REPO = 'https://github.com/MDJ-GitHub/ESPRIT-Internship2.git' 
+        DOCKER_HUB_CREDENTIALS = 'dockerHubCredentials'
+        PROJECT_BACK_NAME = 'esprit-internship2-back'
+        PROJECT_FRONT_NAME = 'esprit-internship2-front'
+        DOCKER_IMAGE_BACK = 'mdjdocker/esprit-internship2-back'
+        DOCKER_IMAGE_FRONT = 'mdjdocker/esprit-internship2-front'
+        GITHUB_REPO = 'https://github.com/MDJ-GitHub/ESPRIT-Internship2.git'
     }
-
-    triggers {
-        pollSCM('* * * * *')
-    }
-
     stages {
-	
-        stage('1/3 | Checkout') {
-            steps {
-                git branch: 'main', url: GITHUB_REPO
-            }
-        }
-
-        
-        stage('2.1/3 | Build Docker Image (Back)') {
+        stage('1 | Install Builders (Maven & NodeJS)') {
             steps {
                 script {
-                    docker.withRegistry('https://registry.hub.docker.com', DOCKER_HUB_CREDENTIALS) {
-                        def dockerImage = docker.build(DOCKER_IMAGE_BACK, 'esprit-internship2-back')
-                        dockerImage.push()
-						docker.image(DOCKER_IMAGE_BACK).pull()
+                    if (sh(returnStatus: true, script: 'which mvn') != 0) {
+                        echo 'Maven is not installed. Proceeding with installation.'
+                        sh '''
+            sudo apt update
+            sudo apt install -y maven 
+			'''
+                        echo 'Maven installed successfully.'
+                    }
+                    if (sh(returnStatus: true, script: 'which nodejs') != 0) {
+                        echo 'NodeJS is not installed. Proceeding with installation.'
+                        sh '''
+            sudo apt update
+			curl -fsSL https://deb.nodesource.com/setup_current.x | sudo -E bash -
+            sudo apt install -y nodejs		
+			sudo apt install -y npm	
+			sudo npm install -g @angular/cli
+			'''
+                        echo 'NodeJS installed successfully.'
                     }
                 }
             }
         }
-
-        stage('2.2/3 | Build Docker Image (Front)') {
+        stage('2 | Github Checkout') {
             steps {
                 script {
-                    docker.withRegistry('https://registry.hub.docker.com', DOCKER_HUB_CREDENTIALS) {
-                        def dockerImage = docker.build(DOCKER_IMAGE_FRONT, 'esprit-internship2-front')
-                        dockerImage.push()
-						docker.image(DOCKER_IMAGE_FRONT).pull()
+                    git branch: 'main', url: GITHUB_REPO
+                }
+            }
+        }
+        stage('3 | Building Project') {
+            steps {
+                script {
+				    echo 'Building the backend of the project (SpringBoot/Maven)'
+                    dir("${PROJECT_BACK_NAME}") {
+                        sh 'mvn clean package'
+                    }
+                    echo 'Building the frontend of the project (Angular/NodeJS)'
+                    dir("${PROJECT_FRONT_NAME}") {
+                        sh 'sudo npm install'
+                        sh 'ng build --configuration local'
                     }
                 }
             }
         }
-        
-
-        stage('3/3 | Deploy to Minikube') {
+        stage('4 | Docker Containement') {
             steps {
-				script {
-					def timestamp = System.currentTimeMillis()
-                    env.TIMESTAMP = "${timestamp}"
-                    bat 'kubectl config use-context minikube'
-					bat 'kubectl apply -f Kubernetesfile.yaml'
-                    bat 'kubectl set image deployment/esprit-internship2-dep-back esprit-internship2-back=%DOCKER_IMAGE_BACK%'
-                    bat 'kubectl set image deployment/esprit-internship2-dep-front esprit-internship2-front=%DOCKER_IMAGE_FRONT%'
-                    bat 'kubectl patch deployment deployment/esprit-internship2-dep-back -p \"{\\\"spec\\\":{\\\"template\\\":{\\\"metadata\\\":{\\\"annotations\\\":{\\\"timestamp\\\":\\\"%TIMESTAMP%\\\"}}}}}\"'
-                    bat 'kubectl patch deployment deployment/esprit-internship2-dep-front -p \"{\\\"spec\\\":{\\\"template\\\":{\\\"metadata\\\":{\\\"annotations\\\":{\\\"timestamp\\\":\\\"%TIMESTAMP%\\\"}}}}}\"'
-                    bat 'kubectl rollout status deployment/devops-deployment'
+                script {
+                    echo 'Dockerizing the backend of the project (SpringBoot)'
+                    dir("${PROJECT_BACK_NAME}") {
+                        docker.withRegistry('https://registry.hub.docker.com', DOCKER_HUB_CREDENTIALS) {
+                            def version = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
+                            def dockerImage = docker.build("${DOCKER_IMAGE_BACK}:${version}")
+                            dockerImage.tag('latest')
+                            dockerImage.push("${version}")
+                            dockerImage.push('latest')
+                            docker.image("${DOCKER_IMAGE_BACK}:latest").pull()
+                        }
+                    }
+                    echo 'Dockerizing the frontend of the project (Angular)'
+                    dir("${PROJECT_FRONT_NAME}") {
+                        docker.withRegistry('https://registry.hub.docker.com', DOCKER_HUB_CREDENTIALS) {
+                            def version = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
+                            def dockerImage = docker.build("${DOCKER_IMAGE_FRONT}:${version}")
+                            dockerImage.tag('latest')
+                            dockerImage.push("${version}")
+                            dockerImage.push('latest')
+                            docker.image("${DOCKER_IMAGE_FRONT}:latest").pull()
+                        }
+                    }
                 }
             }
         }
-		
-    }	
+        stage('5 | Kubernetes Deployment') {
+            steps {
+                script {
+					def version = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
+					sh "sed -i 's/:latest/:${version}/g' Kubernetesfile.yaml"
+                    sh 'sudo kubectl apply -f Kubernetesfile.yaml'
+                }
+            }
+        }
+    }
+    post {
+        success {
+            echo 'ESPRIT2 Internship2 devops project pipeline completed successfully'
+        }
+        failure {
+            echo 'ESPRIT2 Internship2 devops project pipeline failed.'
+        }
+    }
 }
