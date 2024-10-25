@@ -9,54 +9,53 @@ pipeline {
         GITHUB_REPO = 'https://github.com/MDJ-GitHub/ESPRIT-Internship2.git'
     }
     stages {
-        stage('1 | Install Builders (Maven & NodeJS)') {
+        stage('1/5 | Install Builders (Maven & NodeJS)') {
             steps {
                 script {
                     if (sh(returnStatus: true, script: 'which mvn') != 0) {
                         echo 'Maven is not installed. Proceeding with installation.'
                         sh '''
-            sudo apt update
-            sudo apt install -y maven 
-			'''
+						sudo apt update
+						sudo apt install -y maven 
+						'''
                         echo 'Maven installed successfully.'
                     }
                     if (sh(returnStatus: true, script: 'which nodejs') != 0) {
                         echo 'NodeJS is not installed. Proceeding with installation.'
                         sh '''
-            sudo apt update
-			curl -fsSL https://deb.nodesource.com/setup_current.x | sudo -E bash -
-            sudo apt install -y nodejs		
-			sudo apt install -y npm	
-			sudo npm install -g @angular/cli
-			'''
+						sudo apt update
+						curl -fsSL https://deb.nodesource.com/setup_current.x | sudo -E bash -
+						sudo apt install -y nodejs		
+						sudo npm install -g @angular/cli
+						'''
                         echo 'NodeJS installed successfully.'
                     }
                 }
             }
         }
-        stage('2 | Github Checkout') {
+        stage('2/5 | Github Checkout') {
             steps {
                 script {
                     git branch: 'main', url: GITHUB_REPO
                 }
             }
         }
-        stage('3 | Building Project') {
+        stage('3/5 | Building Project') {
             steps {
                 script {
-				    echo 'Building the backend of the project (SpringBoot/Maven)'
+                    echo 'Building the backend of the project (SpringBoot/Maven)'
                     dir("${PROJECT_BACK_NAME}") {
                         sh 'mvn clean package'
                     }
                     echo 'Building the frontend of the project (Angular/NodeJS)'
                     dir("${PROJECT_FRONT_NAME}") {
                         sh 'sudo npm install'
-                        sh 'ng build --configuration local'
+                        sh 'ng build --configuration production'
                     }
                 }
             }
         }
-        stage('4 | Docker Containement') {
+        stage('4/5 | Docker Containement') {
             steps {
                 script {
                     echo 'Dockerizing the backend of the project (SpringBoot)'
@@ -84,11 +83,11 @@ pipeline {
                 }
             }
         }
-        stage('5 | Kubernetes Deployment') {
+        stage('5/5 | Kubernetes Deployment') {
             steps {
                 script {
-					def version = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
-					sh "sed -i 's/:latest/:${version}/g' Kubernetesfile.yaml"
+                    def version = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
+                    sh "sed -i 's/:latest/:${version}/g' Kubernetesfile.yaml"
                     sh 'sudo kubectl apply -f Kubernetesfile.yaml'
                 }
             }
